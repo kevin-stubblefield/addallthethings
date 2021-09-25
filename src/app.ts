@@ -1,17 +1,26 @@
 import { join } from 'path';
-import AutoLoad, { AutoloadPluginOptions } from 'fastify-autoload';
+import AutoLoad from 'fastify-autoload';
 import { FastifyPluginAsync } from 'fastify';
 
-export type AppOptions = {
-  // Place your custom options for app below here.
-} & Partial<AutoloadPluginOptions>;
+function loadEnv(key: string): string {
+  const envVar = process.env[key];
 
-const app: FastifyPluginAsync<AppOptions> = async (
-  fastify,
-  opts
-): Promise<void> => {
+  if (!envVar) {
+    throw new Error(`Must include ${key} as an environment variable.`);
+  }
+
+  return envVar;
+}
+
+type AppConfig = typeof appConfig;
+const appConfig = {
+  igdbClientId: loadEnv('IGDB_CLIENT_ID'),
+  igdbClientSecret: loadEnv('IGDB_CLIENT_SECRET'),
+};
+
+const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // Place here your custom code!
-
+  fastify.decorate('config', appConfig);
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
@@ -32,3 +41,9 @@ const app: FastifyPluginAsync<AppOptions> = async (
 
 export default app;
 export { app };
+
+declare module 'fastify' {
+  export interface FastifyInstance {
+    config: AppConfig;
+  }
+}

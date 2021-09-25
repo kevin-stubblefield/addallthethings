@@ -24,7 +24,6 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const tokenData: Token = await authApi.getToken();
-      fastify.log.info({ token: tokenData.accessToken });
       return { message: tokenData.accessToken };
     },
   });
