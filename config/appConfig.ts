@@ -1,14 +1,16 @@
-function loadEnvironmentVariable(keyname) {
+function loadEnvironmentVariable(keyname: string): string {
   const envVar = process.env[keyname];
 
   if (!envVar) {
-    throw new Error(`Must includ ${keyname} as an environment variable.`);
+    throw new Error(`Must include ${keyname} as an environment variable.`);
   }
 
   return envVar;
 }
 
-module.exports = {
+const appConfig = {
   igdbClientId: loadEnvironmentVariable('IGDB_CLIENT_ID'),
   igdbClientSecret: loadEnvironmentVariable('IGDB_CLIENT_SECRET'),
 };
+
+export default appConfig;
