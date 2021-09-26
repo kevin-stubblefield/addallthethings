@@ -78,7 +78,7 @@ export class IGDBApi extends HttpClient {
     ];
   }
 
-  async searchGames(query: string, fields: string[] = []) {
+  async searchGames(query: string, fields: string[] = []): Promise<any> {
     const body = this.prepareRequestBody(fields);
 
     return await this.instance.post('/games', body, {
@@ -89,7 +89,10 @@ export class IGDBApi extends HttpClient {
     });
   }
 
-  async getGamesById(ids: number[] | string[], fields: string[] = []) {
+  async getGamesById(
+    ids: number[] | string[],
+    fields: string[] = []
+  ): Promise<any> {
     const idString = ids.join(',');
 
     const body = this.prepareRequestBody(
