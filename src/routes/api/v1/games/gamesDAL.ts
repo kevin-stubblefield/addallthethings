@@ -58,26 +58,102 @@ export class AuthApi extends HttpClient {
   }
 }
 
-export class GamesApi extends HttpClient {
+export class IGDBApi extends HttpClient {
   private readonly clientId: string;
   private readonly token: Token;
+
+  private readonly defaultFields: string[];
 
   constructor(baseURL: string, clientId: string, token: Token) {
     super(baseURL);
     this.clientId = clientId;
     this.token = token;
+
+    this.defaultFields = [
+      'name',
+      'rating',
+      'cover.*',
+      'url',
+      'first_release_date',
+    ];
   }
 
-  async searchGames(query: string) {
-    return await this.instance.post(
-      '/games',
-      `fields name, rating, cover.*, url, first_release_date; search "${query}"; where version_parent = null; limit 20;`,
-      {
-        headers: {
-          'Client-ID': this.clientId,
-          Authorization: `Bearer ${this.token.accessToken}`,
-        },
-      }
+  async searchGames(query: string, fields: string[] = []) {
+    const body = this.prepareRequestBody(fields);
+
+    return await this.instance.post('/games', body, {
+      headers: {
+        'Client-ID': this.clientId,
+        Authorization: `Bearer ${this.token.accessToken}`,
+      },
+    });
+  }
+
+  async getGamesById(ids: number[] | string[], fields: string[] = []) {
+    const idString = ids.join(',');
+
+    const body = this.prepareRequestBody(
+      fields,
+      '',
+      `where id = (${idString})`
     );
+
+    return await this.instance.post('/games', body, {
+      headers: {
+        'Client-ID': this.clientId,
+        Authorization: `Bearer ${this.token.accessToken}`,
+      },
+    });
+  }
+
+  // TODO: replace with class to make it more dynamic
+  prepareRequestBody(
+    fields: string[] = [],
+    query: string = '',
+    where: string = '',
+    limit: string = '',
+    offset: string = ''
+  ): string {
+    let requestBody: string;
+
+    if (fields.length === 0) {
+      fields = this.defaultFields;
+    }
+
+    requestBody = `fields ${fields.join(',')};`;
+
+    if (query) {
+      requestBody += query;
+
+      if (!query.endsWith(';')) {
+        requestBody += ';';
+      }
+    }
+
+    if (where) {
+      requestBody += where;
+
+      if (!where.endsWith(';')) {
+        requestBody += ';';
+      }
+    }
+
+    if (limit) {
+      requestBody += limit;
+
+      if (!limit.endsWith(';')) {
+        requestBody += ';';
+      }
+    }
+
+    if (offset) {
+      requestBody += offset;
+
+      if (!offset.endsWith(';')) {
+        requestBody += ';';
+      }
+    }
+
+    return requestBody;
   }
 }
