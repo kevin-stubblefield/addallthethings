@@ -107,7 +107,7 @@ export class IGDBApi extends HttpClient {
   }
 
   // TODO: replace with class to make it more dynamic
-  prepareRequestBody(
+  private prepareRequestBody(
     fields: string[] = [],
     query: string = '',
     where: string = '',
