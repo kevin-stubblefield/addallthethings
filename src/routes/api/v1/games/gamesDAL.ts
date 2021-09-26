@@ -58,13 +58,26 @@ export class AuthApi extends HttpClient {
   }
 }
 
-// export class GamesApi extends HttpClient {
-//   private readonly clientId: string;
-//   private readonly token: Token;
+export class GamesApi extends HttpClient {
+  private readonly clientId: string;
+  private readonly token: Token;
 
-//   constructor(baseURL: string, clientId: string, token: Token) {
-//     super(baseURL);
-//     this.clientId = clientId;
-//     this.token = token;
-//   }
-// }
+  constructor(baseURL: string, clientId: string, token: Token) {
+    super(baseURL);
+    this.clientId = clientId;
+    this.token = token;
+  }
+
+  async searchGames(query: string) {
+    return await this.instance.post(
+      '/games',
+      `fields name, rating, cover.*, url, first_release_date; search "${query}"; where version_parent = null; limit 20;`,
+      {
+        headers: {
+          'Client-ID': this.clientId,
+          Authorization: `Bearer ${this.token.accessToken}`,
+        },
+      }
+    );
+  }
+}
