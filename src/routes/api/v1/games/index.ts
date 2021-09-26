@@ -27,9 +27,14 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
       tags: ['Games'],
       description: 'Get one or more games by id',
       body: {
-        ids: {
-          type: 'array',
-          items: { type: ['number', 'string'] },
+        type: 'object',
+        required: ['ids'],
+        properties: {
+          ids: {
+            type: 'array',
+            items: { type: ['number', 'string'] },
+            minItems: 1,
+          },
         },
       },
       response: {
