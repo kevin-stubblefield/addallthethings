@@ -14,6 +14,7 @@ function loadEnv(key: string): string {
 
 type AppConfig = typeof appConfig;
 const appConfig = {
+  postgresUri: loadEnv('POSTGRES_URI'),
   igdbClientId: loadEnv('IGDB_CLIENT_ID'),
   igdbClientSecret: loadEnv('IGDB_CLIENT_SECRET'),
 };
