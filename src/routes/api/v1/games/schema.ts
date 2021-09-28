@@ -8,6 +8,7 @@ export const GameSchema = {
     },
     name: { type: 'string' },
     rating: { type: 'number' },
+    url: { type: 'string' },
     first_release_date: { type: 'number' },
   },
 };

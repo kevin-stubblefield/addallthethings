@@ -1,5 +1,6 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
-import { AuthApi, IGDBApi, Token } from './gamesDAL';
+import { AuthApi, IGDBApi, Token } from './gamesApi';
+import { GamesDB } from './gamesDAL';
 import { GameSchema } from './schema';
 
 interface GameSearchRequest extends RequestGenericInterface {
@@ -19,6 +20,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
   const clientSecret = fastify.config.igdbClientSecret;
   const authApi = new AuthApi('https://id.twitch.tv', clientId, clientSecret);
   const token: Token = await authApi.getToken();
+  const db = new GamesDB(fastify.db);
 
   fastify.route<GameRetrieveRequest>({
     method: 'POST',
@@ -46,8 +48,11 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const gamesApi = new IGDBApi('https://api.igdb.com/v4', clientId, token);
+      const games = await gamesApi.getGamesById(request.body.ids);
 
-      return gamesApi.getGamesById(request.body.ids);
+      await db.createGames(games);
+
+      return games;
     },
   });
 
