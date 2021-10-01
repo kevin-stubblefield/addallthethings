@@ -1,5 +1,6 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
-import { AuthApi, IGDBApi, Token } from './gamesApi';
+import { Token } from '../../../../interfaces/httpClient';
+import { IGDBAuthApi, IGDBApi } from './gamesApi';
 import { GamesDB } from './gamesDAL';
 import { GameSchema } from './schema';
 
@@ -18,7 +19,11 @@ interface GameRetrieveRequest extends RequestGenericInterface {
 const games: FastifyPluginAsync = async function (fastify, opts) {
   const clientId = fastify.config.igdbClientId;
   const clientSecret = fastify.config.igdbClientSecret;
-  const authApi = new AuthApi('https://id.twitch.tv', clientId, clientSecret);
+  const authApi = new IGDBAuthApi(
+    'https://id.twitch.tv',
+    clientId,
+    clientSecret
+  );
   const token: Token = await authApi.getToken();
   const db = new GamesDB(fastify.db);
 
