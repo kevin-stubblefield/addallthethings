@@ -32,3 +32,7 @@ export type Token = {
   expiresIn: number;
   tokenType: string;
 };
+
+export interface ApiRequestBodyWriter {
+  writeRequestBody(): string;
+}

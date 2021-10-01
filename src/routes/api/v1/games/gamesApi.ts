@@ -1,4 +1,8 @@
-import { HttpClient, Token } from '../../../../interfaces/httpClient';
+import {
+  HttpClient,
+  Token,
+  ApiRequestBodyWriter,
+} from '../../../../interfaces/httpClient';
 
 export class IGDBAuthApi extends HttpClient {
   private readonly clientId: string;
@@ -29,27 +33,18 @@ export class IGDBApi extends HttpClient {
   private readonly clientId: string;
   private readonly token: Token;
 
-  private readonly defaultFields: string[];
-
   constructor(baseURL: string, clientId: string, token: Token) {
     super(baseURL);
     this.clientId = clientId;
     this.token = token;
-
-    this.defaultFields = [
-      'name',
-      'rating',
-      'cover.*',
-      'url',
-      'first_release_date',
-    ];
   }
 
   async searchGames(query: string, fields: string[] = []): Promise<any> {
-    query = `search "${query}"`;
-    const body = this.prepareRequestBody(fields, query);
+    let writer = new IGDBRequestBodyWriter();
+    writer.field(fields);
+    writer.search(query);
 
-    console.log(body);
+    const body = writer.writeRequestBody();
 
     return await this.instance.post('/games', body, {
       headers: {
@@ -65,11 +60,11 @@ export class IGDBApi extends HttpClient {
   ): Promise<any> {
     const idString = ids.join(',');
 
-    const body = this.prepareRequestBody(
-      fields,
-      '',
-      `where id = (${idString})`
-    );
+    let writer = new IGDBRequestBodyWriter();
+    writer.field(fields);
+    writer.where(`id = (${idString})`);
+
+    const body = writer.writeRequestBody();
 
     return await this.instance.post('/games', body, {
       headers: {
@@ -78,55 +73,82 @@ export class IGDBApi extends HttpClient {
       },
     });
   }
+}
 
-  // TODO: replace with class to make it more dynamic
-  private prepareRequestBody(
-    fields: string[] = [],
-    query: string = '',
-    where: string = '',
-    limit: string = '',
-    offset: string = ''
-  ): string {
-    let requestBody: string;
+class IGDBRequestBodyWriter implements ApiRequestBodyWriter {
+  private fields?: string[];
+  private searchClause?: string;
+  private whereClause?: string[];
+  private limitClause: number = 10;
+  private offsetClause: number = 0;
 
-    if (fields.length === 0) {
-      fields = this.defaultFields;
+  private defaultFields: string[];
+
+  constructor() {
+    this.defaultFields = [
+      'name',
+      'rating',
+      'cover.*',
+      'url',
+      'first_release_date',
+    ];
+  }
+
+  writeRequestBody(): string {
+    if (this.fields === undefined || this.fields.length === 0) {
+      this.fields = this.defaultFields;
     }
 
-    requestBody = `fields ${fields.join(',')};`;
+    let requestBody = '';
 
-    if (query) {
-      requestBody += query;
+    requestBody += `fields ${this.fields}; `;
 
-      if (!query.endsWith(';')) {
-        requestBody += ';';
-      }
+    if (this.searchClause !== undefined) {
+      requestBody += `search "${this.searchClause}"; `;
     }
 
-    if (where) {
-      requestBody += where;
-
-      if (!where.endsWith(';')) {
-        requestBody += ';';
-      }
+    if (this.whereClause !== undefined) {
+      requestBody += `where ${this.whereClause.join(' & ')}; `;
     }
 
-    if (limit) {
-      requestBody += limit;
-
-      if (!limit.endsWith(';')) {
-        requestBody += ';';
-      }
-    }
-
-    if (offset) {
-      requestBody += offset;
-
-      if (!offset.endsWith(';')) {
-        requestBody += ';';
-      }
-    }
+    requestBody += `limit ${this.limitClause}; offset ${this.offsetClause};`;
 
     return requestBody;
+  }
+
+  field(fieldsToAdd: string | string[]): void {
+    if (this.fields === undefined) {
+      this.fields = [];
+    }
+
+    if (typeof fieldsToAdd === 'string') {
+      this.fields.push(fieldsToAdd);
+    } else {
+      this.fields.push(...fieldsToAdd);
+    }
+  }
+
+  search(query: string): void {
+    this.searchClause = query;
+  }
+
+  where(whereClauses: string | string[]): void {
+    if (this.whereClause === undefined) {
+      this.whereClause = [];
+    }
+
+    if (typeof whereClauses === 'string') {
+      this.whereClause.push(whereClauses);
+    } else {
+      this.whereClause.push(...whereClauses);
+    }
+  }
+
+  limit(limit: number): void {
+    this.limitClause = limit;
+  }
+
+  offset(offset: number): void {
+    this.offsetClause = offset;
   }
 }
