@@ -4,7 +4,16 @@ import { UsersDB } from './usersDAL';
 
 interface UserRetrieveByDiscordIdRequest extends RequestGenericInterface {
   Params: {
-    discordId: string;
+    discord_id: string;
+  };
+}
+
+interface DiscordUserCreateRequest extends RequestGenericInterface {
+  Body: {
+    discord_username: string;
+    discord_discriminator: string;
+    discord_tag: string;
+    discord_user_id: string;
   };
 }
 
@@ -13,14 +22,14 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
 
   fastify.route<UserRetrieveByDiscordIdRequest>({
     method: 'GET',
-    url: '/:discordId',
+    url: '/:discord_id',
     schema: {
       tags: ['Users'],
       description: 'Retrieve a user from the database by their discord id',
       params: {
         type: 'object',
         properties: {
-          discordId: { type: 'string' },
+          discord_id: { type: 'string' },
         },
       },
       response: {
@@ -28,7 +37,38 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      return await db.getUserByDiscordId(request.params.discordId);
+      return await db.getUserByDiscordId(request.params.discord_id);
+    },
+  });
+
+  fastify.route<DiscordUserCreateRequest>({
+    method: 'POST',
+    url: '/',
+    schema: {
+      tags: ['Users'],
+      description: 'Create a new user with discord information',
+      body: {
+        type: 'object',
+        required: [
+          'discord_username',
+          'discord_discriminator',
+          'discord_tag',
+          'discord_user_id',
+        ],
+        properties: {
+          discord_username: { type: 'string' },
+          discord_discriminator: { type: 'string' },
+          discord_tag: { type: 'string' },
+          discord_user_id: { type: 'string' },
+        },
+      },
+      response: {
+        200: UserSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const result = await db.insertDiscordUser(request.body);
+      return result[0];
     },
   });
 };

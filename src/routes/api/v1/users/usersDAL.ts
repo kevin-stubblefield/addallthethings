@@ -13,6 +13,22 @@ export class UsersDB extends DBClient {
 
     return result[0];
   }
+
+  async insertDiscordUser(
+    user: DiscordUserRequestDTO
+  ): Promise<UserResponseDTO[]> {
+    return await this.db<UserDBObject>('users')
+      .returning([
+        'id',
+        'username',
+        'email',
+        'discord_username',
+        'discord_discriminator',
+        'discord_tag',
+        'discord_user_id',
+      ])
+      .insert(user);
+  }
 }
 
 interface UserDBObject {
@@ -25,7 +41,7 @@ interface UserDBObject {
   discord_tag: string;
   discord_user_id: string;
   created_at: Date;
-  updated_at: Date;
+  updated_at?: Date;
 }
 
 export type UserRequestDTO = Pick<
@@ -33,6 +49,15 @@ export type UserRequestDTO = Pick<
   | 'username'
   | 'password_hash'
   | 'email'
+  | 'discord_username'
+  | 'discord_discriminator'
+  | 'discord_tag'
+  | 'discord_user_id'
+  | 'updated_at'
+>;
+
+type DiscordUserRequestDTO = Pick<
+  UserRequestDTO,
   | 'discord_username'
   | 'discord_discriminator'
   | 'discord_tag'
