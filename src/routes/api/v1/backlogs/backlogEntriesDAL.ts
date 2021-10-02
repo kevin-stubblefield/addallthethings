@@ -14,6 +14,15 @@ export class BacklogEntriesDB extends DBClient {
       .insert(backlogEntry);
   }
 
+  async getBacklogEntries(
+    backlog_id: number
+  ): Promise<BacklogEntryResponseDTO[]> {
+    return await this.db<BacklogEntryDBObject>('backlog_entries')
+      .select('*')
+      .join('media', 'backlog_entries.media_id', 'media.id')
+      .where('backlog_entries.backlog_id', backlog_id);
+  }
+
   async updateBacklogEntry(
     id: number,
     status: BacklogEntryStatus
@@ -63,7 +72,7 @@ interface BacklogEntryDBObject {
 export type BacklogEntryRequestDTO = Pick<
   BacklogEntryDBObject,
   'backlog_id' | 'media_id' | 'status' | 'updated_at'
->;
+> & { source_api_id?: string };
 
 export type BacklogEntryResponseDTO = Pick<
   BacklogEntryDBObject,

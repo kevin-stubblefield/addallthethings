@@ -18,5 +18,6 @@ export const BacklogEntrySchema = {
     backlog_id: { type: 'integer' },
     media_id: { type: 'integer' },
     status: { type: 'integer' },
+    source_api_id: { type: 'string' },
   },
 };

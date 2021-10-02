@@ -6,7 +6,7 @@ import {
   BacklogEntryStatus,
 } from './backlogEntriesDAL';
 import { BacklogRequestDTO, BacklogsDB } from './backlogsDAL';
-import { BacklogSchema } from './schemas';
+import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
 interface BacklogRetrieveAllRequest extends RequestGenericInterface {
   Querystring: {
@@ -31,6 +31,12 @@ interface BacklogEntryCreateRequest extends RequestGenericInterface {
     media_id: number;
     status: BacklogEntryStatus;
   };
+  Params: {
+    backlog_id: number;
+  };
+}
+
+interface BacklogEntryRetrieveRequest extends RequestGenericInterface {
   Params: {
     backlog_id: number;
   };
@@ -212,6 +218,9 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
           backlog_id: { type: 'integer' },
         },
       },
+      response: {
+        200: BacklogEntrySchema,
+      },
     },
     handler: async (request, reply) => {
       const newEntry: BacklogEntryRequestDTO = {
@@ -232,6 +241,37 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       }
 
       return result;
+    },
+  });
+
+  fastify.route<BacklogEntryRetrieveRequest>({
+    method: 'GET',
+    url: '/:backlog_id/entries',
+    schema: {
+      tags: ['Backlog Entries'],
+      description: 'Retrieve all entries for a backlog in the database',
+      params: {
+        type: 'object',
+        properties: {
+          backlog_id: { type: 'integer' },
+        },
+      },
+      response: {
+        200: {
+          type: 'array',
+          items: BacklogEntrySchema,
+        },
+      },
+    },
+    handler: async (request, reply) => {
+      const { backlog_id } = request.params;
+      const exists = await backlogsDb.backlogExists(backlog_id);
+
+      if (!exists) {
+        throw { statusCode: 404, message: 'Backlog not found' };
+      }
+
+      return await entriesDb.getBacklogEntries(backlog_id);
     },
   });
 
