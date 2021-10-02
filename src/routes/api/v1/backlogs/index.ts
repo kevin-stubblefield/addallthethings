@@ -1,8 +1,8 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
-import { BacklogCategory, BacklogsDB } from './backlogsDAL';
+import { BacklogRequestDTO, BacklogsDB } from './backlogsDAL';
 import { BacklogSchema } from './schemas';
 
-interface BacklogRetrieveRequest extends RequestGenericInterface {
+interface BacklogRetrieveAllRequest extends RequestGenericInterface {
   Querystring: {
     userId: number;
     limit?: number;
@@ -10,14 +10,18 @@ interface BacklogRetrieveRequest extends RequestGenericInterface {
   };
 }
 
-interface BacklogCreateRequest extends RequestGenericInterface {
-  Body: {
-    name: string;
-    description: string;
-    user_id: number;
-    category: BacklogCategory;
+interface BacklogRetrieveOneRequest extends RequestGenericInterface {
+  Params: {
+    id: number;
   };
 }
+
+interface BacklogCreateRequest extends RequestGenericInterface {
+  Body: BacklogRequestDTO;
+}
+
+type BacklogUpdateRequest = BacklogRetrieveOneRequest &
+  Omit<BacklogCreateRequest, 'user_id'>;
 
 const backlogs: FastifyPluginAsync = async function (fastify, opts) {
   const db = new BacklogsDB(fastify.db);
@@ -48,7 +52,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
   });
 
-  fastify.route<BacklogRetrieveRequest>({
+  fastify.route<BacklogRetrieveAllRequest>({
     method: 'GET',
     url: '/',
     schema: {
@@ -72,6 +76,56 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       const offset = request.query.offset || 0;
 
       return await db.getBacklogs(userId, limit, offset);
+    },
+  });
+
+  fastify.route<BacklogRetrieveOneRequest>({
+    method: 'GET',
+    url: '/:id',
+    schema: {
+      tags: ['Backlogs'],
+      description: 'Retrieves a single backlog from database',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      },
+      response: {
+        200: BacklogSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      return await db.getBacklog(request.params.id);
+    },
+  });
+
+  fastify.route<BacklogUpdateRequest>({
+    method: 'PATCH',
+    url: '/:id',
+    schema: {
+      tags: ['Backlogs'],
+      description: 'Updates a backlog in the database',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string' },
+          category: { type: 'integer', minimum: 0 },
+        },
+      },
+      response: {
+        200: BacklogSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      return await db.updateBacklog(request.params.id, request.body);
     },
   });
 };

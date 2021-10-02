@@ -6,12 +6,8 @@ export class BacklogsDB extends DBClient {
     super(db);
   }
 
-  async createBacklog(
-    backlog: any
-  ): Promise<
-    Pick<BacklogDTO, 'id' | 'name' | 'description' | 'user_id' | 'category'>
-  > {
-    return await this.db<BacklogDTO>('backlogs')
+  async createBacklog(backlog: BacklogRequestDTO): Promise<BacklogResponseDTO> {
+    return await this.db<BacklogDBObject>('backlogs')
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .insert(backlog);
   }
@@ -20,18 +16,35 @@ export class BacklogsDB extends DBClient {
     userId: number,
     limit: number,
     offset: number
-  ): Promise<
-    Pick<BacklogDTO, 'id' | 'name' | 'description' | 'user_id' | 'category'>[]
-  > {
-    return await this.db<BacklogDTO>('backlogs')
-      .select('id', 'name', 'description', 'user_id', 'category')
+  ): Promise<BacklogResponseDTO[]> {
+    return await this.db<BacklogDBObject>('backlogs')
+      .select('*')
       .where('user_id', userId)
       .limit(limit)
       .offset(offset);
   }
+
+  async getBacklog(id: number): Promise<BacklogResponseDTO> {
+    const result = await this.db<BacklogDBObject>('backlogs')
+      .select('*')
+      .where('id', id);
+
+    return result[0];
+  }
+
+  async updateBacklog(
+    id: number,
+    backlog: BacklogRequestDTO
+  ): Promise<BacklogResponseDTO> {
+    const result = await this.db<BacklogDBObject>('backlogs')
+      .where('id', id)
+      .update(backlog, ['id', 'name', 'description', 'user_id', 'category']);
+
+    return result[0];
+  }
 }
 
-export interface BacklogDTO {
+export interface BacklogDBObject {
   id: number;
   name: string;
   description: string;
@@ -49,12 +62,22 @@ export enum BacklogCategory {
   Anime,
 }
 
+export type BacklogRequestDTO = Pick<
+  BacklogDBObject,
+  'name' | 'description' | 'user_id' | 'category'
+>;
+
+type BacklogResponseDTO = Pick<
+  BacklogDBObject,
+  'id' | 'name' | 'description' | 'user_id' | 'category'
+>;
+
 declare module 'knex/types/tables' {
   interface Tables {
     backlogs: Knex.CompositeTableType<
-      BacklogDTO,
-      Partial<Omit<BacklogDTO, 'id' | 'created_at' | 'updated_at'>>,
-      Partial<Omit<BacklogDTO, 'id' | 'created_at'>>
+      BacklogDBObject,
+      Partial<Omit<BacklogDBObject, 'id' | 'created_at' | 'updated_at'>>,
+      Partial<Omit<BacklogDBObject, 'id' | 'created_at'>>
     >;
   }
 }
