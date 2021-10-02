@@ -36,6 +36,15 @@ interface BacklogEntryCreateRequest extends RequestGenericInterface {
   };
 }
 
+interface BacklogEntryUpdateRequest extends RequestGenericInterface {
+  Body: {
+    status: BacklogEntryStatus;
+  };
+  Params: {
+    id: number;
+  };
+}
+
 interface BacklogEntryDeleteRequest extends RequestGenericInterface {
   Params: {
     id: number;
@@ -182,6 +191,8 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
   });
 
+  // Backlog Entry routes
+
   fastify.route<BacklogEntryCreateRequest>({
     method: 'POST',
     url: '/:backlog_id/entries',
@@ -211,6 +222,46 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
 
       try {
         result = await entriesDb.createBacklogEntry(newEntry);
+      } catch (err) {
+        throw {
+          statusCode: 404,
+          message: 'Media not found',
+          errorMessage: `${err}`,
+          internalError: err,
+        };
+      }
+
+      return result;
+    },
+  });
+
+  fastify.route<BacklogEntryUpdateRequest>({
+    method: 'PATCH',
+    url: '/entries/:id',
+    schema: {
+      tags: ['Backlog Entries'],
+      description: 'Update an entry in a backlog',
+      body: {
+        type: 'object',
+        properties: {
+          status: { type: 'integer' },
+        },
+      },
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+        },
+      },
+    },
+    handler: async (request, reply) => {
+      let result: BacklogEntryResponseDTO;
+
+      try {
+        result = await entriesDb.updateBacklogEntry(
+          request.params.id,
+          request.body.status
+        );
       } catch (err) {
         throw {
           statusCode: 404,

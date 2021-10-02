@@ -14,6 +14,22 @@ export class BacklogEntriesDB extends DBClient {
       .insert(backlogEntry);
   }
 
+  async updateBacklogEntry(
+    id: number,
+    status: BacklogEntryStatus
+  ): Promise<BacklogEntryResponseDTO> {
+    const result = await this.db<BacklogEntryDBObject>('backlog_entries')
+      .where('id', id)
+      .update({ status, updated_at: new Date() }, [
+        'id',
+        'backlog_id',
+        'media_id',
+        'status',
+      ]);
+
+    return result[0];
+  }
+
   async deleteBacklogEntry(id: number): Promise<void> {
     await this.db<BacklogEntryDBObject>('backlog_entries')
       .where('id', id)
