@@ -9,3 +9,14 @@ export const BacklogSchema = {
     category: { type: 'integer', minimum: 0 },
   },
 };
+
+export const BacklogEntrySchema = {
+  type: 'object',
+  required: ['id', 'backlog_id', 'media_id', 'status'],
+  properties: {
+    id: { type: 'integer' },
+    backlog_id: { type: 'integer' },
+    media_id: { type: 'integer' },
+    status: { type: 'integer' },
+  },
+};

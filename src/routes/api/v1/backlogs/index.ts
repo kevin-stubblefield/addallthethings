@@ -1,4 +1,10 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
+import {
+  BacklogEntriesDB,
+  BacklogEntryRequestDTO,
+  BacklogEntryResponseDTO,
+  BacklogEntryStatus,
+} from './backlogEntriesDAL';
 import { BacklogRequestDTO, BacklogsDB } from './backlogsDAL';
 import { BacklogSchema } from './schemas';
 
@@ -20,11 +26,22 @@ interface BacklogCreateRequest extends RequestGenericInterface {
   Body: BacklogRequestDTO;
 }
 
+interface BacklogEntryCreateRequest extends RequestGenericInterface {
+  Body: {
+    media_id: number;
+    status: BacklogEntryStatus;
+  };
+  Params: {
+    backlog_id: number;
+  };
+}
+
 type BacklogUpdateRequest = BacklogRetrieveOneRequest &
   Omit<BacklogCreateRequest, 'user_id'>;
 
 const backlogs: FastifyPluginAsync = async function (fastify, opts) {
-  const db = new BacklogsDB(fastify.db);
+  const backlogsDb = new BacklogsDB(fastify.db);
+  const entriesDb = new BacklogEntriesDB(fastify.db);
 
   fastify.route<BacklogCreateRequest>({
     method: 'POST',
@@ -47,7 +64,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      const newBacklog = await db.createBacklog(request.body);
+      const newBacklog = await backlogsDb.createBacklog(request.body);
       return newBacklog;
     },
   });
@@ -75,7 +92,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       const limit = request.query.limit || 15;
       const offset = request.query.offset || 0;
 
-      return await db.getBacklogs(userId, limit, offset);
+      return await backlogsDb.getBacklogs(userId, limit, offset);
     },
   });
 
@@ -96,7 +113,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      return await db.getBacklog(request.params.id);
+      return await backlogsDb.getBacklog(request.params.id);
     },
   });
 
@@ -125,7 +142,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      return await db.updateBacklog(request.params.id, request.body);
+      return await backlogsDb.updateBacklog(request.params.id, request.body);
     },
   });
 
@@ -147,15 +164,57 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const backlogId = request.params.id;
-      const exists = await db.backlogExists(backlogId);
+      const exists = await backlogsDb.backlogExists(backlogId);
 
       if (!exists) {
         throw { statusCode: 404, message: 'Backlog not found' };
       }
 
-      await db.deleteBacklog(backlogId);
+      await backlogsDb.deleteBacklog(backlogId);
 
       reply.code(204);
+    },
+  });
+
+  fastify.route<BacklogEntryCreateRequest>({
+    method: 'POST',
+    url: '/:backlog_id/entries',
+    schema: {
+      tags: ['Backlog Entries'],
+      description: 'Create an entry in a backlog',
+      body: {
+        type: 'object',
+        properties: {
+          media_id: { type: 'integer' },
+          status: { type: 'integer' },
+        },
+      },
+      params: {
+        type: 'object',
+        properties: {
+          backlog_id: { type: 'integer' },
+        },
+      },
+    },
+    handler: async (request, reply) => {
+      const newEntry: BacklogEntryRequestDTO = {
+        backlog_id: request.params.backlog_id,
+        ...request.body,
+      };
+      let result: BacklogEntryResponseDTO;
+
+      try {
+        result = await entriesDb.createBacklogEntry(newEntry);
+      } catch (err) {
+        throw {
+          statusCode: 404,
+          message: 'Media not found',
+          errorMessage: `${err}`,
+          internalError: err,
+        };
+      }
+
+      return result;
     },
   });
 };
