@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { MediaDB, Medium } from '../../../../interfaces/mediaDb';
+import { MediaDB, MediumDTO } from '../../../../interfaces/mediaDb';
 
 export class GamesDB extends MediaDB {
   constructor(db: Knex<any, unknown[]>) {
@@ -8,7 +8,7 @@ export class GamesDB extends MediaDB {
 
   async createGames(games: any[]) {
     let gamesToInsert = games.map((game) => {
-      let gameToInsert: Medium = {
+      let gameToInsert: MediumDTO = {
         source_api_id: game.id,
         source_name: game.name,
         source_api_url: game.url,
@@ -18,6 +18,6 @@ export class GamesDB extends MediaDB {
       return gameToInsert;
     });
 
-    await this.db<Medium>('media').insert(gamesToInsert);
+    await this.db<MediumDTO>('media').insert(gamesToInsert);
   }
 }

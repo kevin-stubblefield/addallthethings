@@ -16,7 +16,7 @@ CREATE TABLE backlogs (
 	name VARCHAR(50) NOT NULL DEFAULT 'New Backlog',
 	description TEXT NOT NULL DEFAULT '',
 	user_id INTEGER NOT NULL,
-	category INTEGER NOT NULL DEFAULT 1,
+	category INTEGER NOT NULL DEFAULT 0,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	CONSTRAINT fk_user
@@ -68,3 +68,12 @@ CREATE TABLE backlog_entries (
 -- CREATE DEFAULT ENTRIES
 INSERT INTO users(username, discord_username, discord_discriminator, discord_tag, discord_user_id) VALUES ('Winterfresh', 'Winterfresh92', '0961', 'Winterfresh92#0961', '313060065181433867');
 INSERT INTO media_types(type_label, is_global, created_by) VALUES ('Game', TRUE, 1), ('TV Show', TRUE, 1), ('Movie', TRUE, 1), ('Anime', TRUE, 1);
+
+
+/*
+DROP TABLE backlog_entries;
+DROP TABLE media;
+DROP TABLE media_types;
+DROP TABLE backlogs;
+DROP TABLE users;
+*/

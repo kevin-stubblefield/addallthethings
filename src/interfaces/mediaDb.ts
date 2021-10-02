@@ -1,16 +1,16 @@
 import { Knex } from 'knex';
+import { DBClient } from './dbClient';
 
-export abstract class MediaDB {
-  protected db: Knex<any, unknown[]>;
+export abstract class MediaDB extends DBClient {
   protected typeId: number;
 
   constructor(db: Knex<any, unknown[]>, typeId: number) {
-    this.db = db;
+    super(db);
     this.typeId = typeId;
   }
 }
 
-export interface Medium {
+export interface MediumDTO {
   id?: number;
   source_name: string;
   source_api_url: string;
@@ -21,9 +21,9 @@ export interface Medium {
 declare module 'knex/types/tables' {
   interface Tables {
     media: Knex.CompositeTableType<
-      Medium,
-      Partial<Omit<Medium, 'id'>>,
-      Partial<Omit<Medium, 'id'>>
+      MediumDTO,
+      Partial<Omit<MediumDTO, 'id'>>,
+      Partial<Omit<MediumDTO, 'id'>>
     >;
   }
 }
