@@ -36,6 +36,7 @@ export class BacklogsDB extends DBClient {
     id: number,
     backlog: BacklogRequestDTO
   ): Promise<BacklogResponseDTO> {
+    backlog.updated_at = new Date();
     const result = await this.db<BacklogDBObject>('backlogs')
       .where('id', id)
       .update(backlog, ['id', 'name', 'description', 'user_id', 'category']);
@@ -76,7 +77,7 @@ export enum BacklogCategory {
 
 export type BacklogRequestDTO = Pick<
   BacklogDBObject,
-  'name' | 'description' | 'user_id' | 'category'
+  'name' | 'description' | 'user_id' | 'category' | 'updated_at'
 >;
 
 type BacklogResponseDTO = Pick<
