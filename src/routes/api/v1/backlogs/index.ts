@@ -128,6 +128,36 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       return await db.updateBacklog(request.params.id, request.body);
     },
   });
+
+  fastify.route<BacklogRetrieveOneRequest>({
+    method: 'DELETE',
+    url: '/:id',
+    schema: {
+      tags: ['Backlogs'],
+      description: 'Removes a single backlog from database',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      },
+      response: {
+        204: { type: 'string', default: 'No Content' },
+      },
+    },
+    handler: async (request, reply) => {
+      const backlogId = request.params.id;
+      const exists = await db.backlogExists(backlogId);
+
+      if (!exists) {
+        throw { statusCode: 404, message: 'Backlog not found' };
+      }
+
+      await db.deleteBacklog(backlogId);
+
+      reply.code(204);
+    },
+  });
 };
 
 export default backlogs;

@@ -42,6 +42,18 @@ export class BacklogsDB extends DBClient {
 
     return result[0];
   }
+
+  async deleteBacklog(id: number): Promise<void> {
+    await this.db<BacklogDBObject>('backlogs').where('id', id).delete();
+  }
+
+  async backlogExists(id: number): Promise<boolean> {
+    const result = await this.db<BacklogDBObject>('backlogs')
+      .select('id')
+      .where('id', id);
+
+    return result.length > 0;
+  }
 }
 
 export interface BacklogDBObject {
