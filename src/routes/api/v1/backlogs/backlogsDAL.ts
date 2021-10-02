@@ -15,6 +15,20 @@ export class BacklogsDB extends DBClient {
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .insert(backlog);
   }
+
+  async getBacklogs(
+    userId: number,
+    limit: number,
+    offset: number
+  ): Promise<
+    Pick<BacklogDTO, 'id' | 'name' | 'description' | 'user_id' | 'category'>[]
+  > {
+    return await this.db<BacklogDTO>('backlogs')
+      .select('id', 'name', 'description', 'user_id', 'category')
+      .where('user_id', userId)
+      .limit(limit)
+      .offset(offset);
+  }
 }
 
 export interface BacklogDTO {
