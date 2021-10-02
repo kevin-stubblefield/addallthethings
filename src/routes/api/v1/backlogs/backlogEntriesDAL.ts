@@ -13,6 +13,20 @@ export class BacklogEntriesDB extends DBClient {
       .returning(['id', 'backlog_id', 'media_id', 'status'])
       .insert(backlogEntry);
   }
+
+  async deleteBacklogEntry(id: number): Promise<void> {
+    await this.db<BacklogEntryDBObject>('backlog_entries')
+      .where('id', id)
+      .delete();
+  }
+
+  async backlogEntryExists(id: number): Promise<boolean> {
+    const result = await this.db<BacklogEntryDBObject>('backlog_entries')
+      .select('id')
+      .where('id', id);
+
+    return result.length > 0;
+  }
 }
 
 export enum BacklogEntryStatus {

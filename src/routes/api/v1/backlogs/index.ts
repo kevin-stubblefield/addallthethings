@@ -36,6 +36,12 @@ interface BacklogEntryCreateRequest extends RequestGenericInterface {
   };
 }
 
+interface BacklogEntryDeleteRequest extends RequestGenericInterface {
+  Params: {
+    id: number;
+  };
+}
+
 type BacklogUpdateRequest = BacklogRetrieveOneRequest &
   Omit<BacklogCreateRequest, 'user_id'>;
 
@@ -215,6 +221,36 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       }
 
       return result;
+    },
+  });
+
+  fastify.route<BacklogEntryDeleteRequest>({
+    method: 'DELETE',
+    url: '/entries/:id',
+    schema: {
+      tags: ['Backlog Entries'],
+      description: 'Removes a single backlog entry from database',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      },
+      response: {
+        204: { type: 'string', default: 'No Content' },
+      },
+    },
+    handler: async (request, reply) => {
+      const entryId = request.params.id;
+      const exists = await entriesDb.backlogEntryExists(entryId);
+
+      if (!exists) {
+        throw { statusCode: 404, message: 'Backlog entry not found' };
+      }
+
+      await entriesDb.deleteBacklogEntry(entryId);
+
+      reply.code(204);
     },
   });
 };
