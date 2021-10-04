@@ -17,6 +17,7 @@ CREATE TABLE backlogs (
 	description TEXT NOT NULL DEFAULT '',
 	user_id INTEGER NOT NULL,
 	category INTEGER NOT NULL DEFAULT 0,
+	privacy INTEGER NOT NULL DEFAULT 0,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	CONSTRAINT fk_user
@@ -67,6 +68,9 @@ CREATE TABLE backlog_entries (
 			REFERENCES media(id)
 			ON DELETE CASCADE
 );
+
+COMMENT ON COLUMN backlogs.privacy IS '0 - Public; 1 - Friends only; 2 - Private';
+COMMENT ON COLUMN backlog_entries.status IS '0 - Not Started; 1 - In Progress; 2 - Completed';
 
 -- CREATE DEFAULT ENTRIES
 INSERT INTO users(username, discord_username, discord_discriminator, discord_tag, discord_user_id) VALUES ('Winterfresh', 'Winterfresh92', '0961', 'Winterfresh92#0961', '313060065181433867');
