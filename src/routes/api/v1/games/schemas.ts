@@ -1,7 +1,7 @@
 export const GameSchema = {
   type: 'object',
   properties: {
-    id: { type: 'number' },
+    id: { type: 'string' },
     cover: {
       type: 'object',
       properties: { url: { type: 'string' } },

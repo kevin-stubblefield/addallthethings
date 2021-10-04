@@ -38,10 +38,13 @@ CREATE TABLE media_types (
 
 CREATE TABLE media (
 	id SERIAL PRIMARY KEY,
-	source_name VARCHAR(100) NOT NULL,
-	source_api_url TEXT NOT NULL,
+	source_name VARCHAR(50) NOT NULL,
+	source_api_title VARCHAR(100) NOT NULL,
+	source_api_url TEXT NOT NULL DEFAULT '',
 	source_api_id TEXT NOT NULL,
+	source_webpage_url TEXT NOT NULL DEFAULT '',
 	type_id INTEGER NOT NULL,
+	UNIQUE (source_name, source_api_id),
 	CONSTRAINT fk_media_type
 		FOREIGN KEY (type_id)
 			REFERENCES media_types(id)
@@ -68,12 +71,3 @@ CREATE TABLE backlog_entries (
 -- CREATE DEFAULT ENTRIES
 INSERT INTO users(username, discord_username, discord_discriminator, discord_tag, discord_user_id) VALUES ('Winterfresh', 'Winterfresh92', '0961', 'Winterfresh92#0961', '313060065181433867');
 INSERT INTO media_types(type_label, is_global, created_by) VALUES ('Game', TRUE, 1), ('TV Show', TRUE, 1), ('Movie', TRUE, 1), ('Anime', TRUE, 1);
-
-
-/*
-DROP TABLE backlog_entries;
-DROP TABLE media;
-DROP TABLE media_types;
-DROP TABLE backlogs;
-DROP TABLE users;
-*/

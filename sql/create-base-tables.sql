@@ -38,10 +38,13 @@ CREATE TABLE media_types (
 
 CREATE TABLE media (
 	id SERIAL PRIMARY KEY,
-	source_name VARCHAR(100) NOT NULL,
-	source_api_url TEXT NOT NULL,
+	source_name VARCHAR(50) NOT NULL,
+	source_api_title VARCHAR(100) NOT NULL,
+	source_api_url TEXT NOT NULL DEFAULT '',
 	source_api_id TEXT NOT NULL,
+	source_webpage_url TEXT NOT NULL DEFAULT '',
 	type_id INTEGER NOT NULL,
+	UNIQUE (source_name, source_api_id),
 	CONSTRAINT fk_media_type
 		FOREIGN KEY (type_id)
 			REFERENCES media_types(id)

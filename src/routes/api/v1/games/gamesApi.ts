@@ -3,6 +3,7 @@ import {
   Token,
   ApiRequestBodyWriter,
 } from '../../../../interfaces/httpClient';
+import { GameApiDto } from './DTOs';
 
 export class IGDBAuthApi extends HttpClient {
   private readonly clientId: string;
@@ -39,7 +40,10 @@ export class IGDBApi extends HttpClient {
     this.token = token;
   }
 
-  async searchGames(query: string, fields: string[] = []): Promise<any> {
+  async searchGames(
+    query: string,
+    fields: string[] = []
+  ): Promise<GameApiDto[]> {
     let writer = new IGDBRequestBodyWriter();
     writer.field(fields);
     writer.search(query);
@@ -55,9 +59,9 @@ export class IGDBApi extends HttpClient {
   }
 
   async getGamesById(
-    ids: number[] | string[],
+    ids: string[],
     fields: string[] = []
-  ): Promise<any> {
+  ): Promise<GameApiDto[]> {
     const idString = ids.join(',');
 
     let writer = new IGDBRequestBodyWriter();

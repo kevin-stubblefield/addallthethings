@@ -12,7 +12,7 @@ interface GameSearchRequest extends RequestGenericInterface {
 
 interface GameRetrieveRequest extends RequestGenericInterface {
   Body: {
-    ids: number[] | string[];
+    ids: string[];
   };
 }
 
@@ -26,6 +26,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
   );
   const token: Token = await authApi.getToken();
   const db = new GamesDB(fastify.db);
+  const sourceName = 'IGDB';
 
   fastify.route<GameRetrieveRequest>({
     method: 'POST',
@@ -39,7 +40,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
         properties: {
           ids: {
             type: 'array',
-            items: { type: ['number', 'string'] },
+            items: { type: 'string' },
             minItems: 1,
           },
         },
@@ -55,7 +56,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
       const gamesApi = new IGDBApi('https://api.igdb.com/v4', clientId, token);
       const games = await gamesApi.getGamesById(request.body.ids);
 
-      await db.createGames(games);
+      await db.createGames(games, sourceName);
 
       return games;
     },
@@ -82,6 +83,9 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
 
       const { query } = request.query;
       const searchResults = await gamesApi.searchGames(query);
+
+      await db.createGames(searchResults, sourceName);
+
       return searchResults;
     },
   });
