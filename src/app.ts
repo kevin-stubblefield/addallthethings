@@ -12,14 +12,18 @@ function loadEnv(key: string): string {
   return envVar;
 }
 
-type AppConfig = typeof appConfig;
-const appConfig = {
-  postgresUri: loadEnv('POSTGRES_URI'),
-  igdbClientId: loadEnv('IGDB_CLIENT_ID'),
-  igdbClientSecret: loadEnv('IGDB_CLIENT_SECRET'),
+type AppConfig = {
+  postgresUri: string;
+  igdbClientId: string;
+  igdbClientSecret: string;
 };
 
 const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  const appConfig = {
+    postgresUri: loadEnv('POSTGRES_URI'),
+    igdbClientId: loadEnv('IGDB_CLIENT_ID'),
+    igdbClientSecret: loadEnv('IGDB_CLIENT_SECRET'),
+  };
   // Place here your custom code!
   fastify.decorate('config', appConfig);
   // Do not touch the following lines
