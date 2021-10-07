@@ -1,6 +1,6 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
 import { UserSchema } from './schemas';
-import { UsersDB } from './usersDAL';
+import { UsersDB, UserResponseDTO } from './usersDAL';
 
 interface UserRetrieveByDiscordIdRequest extends RequestGenericInterface {
   Params: {
@@ -67,7 +67,12 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      const result = await db.insertDiscordUser(request.body);
+      let result: UserResponseDTO[];
+      try {
+        result = await db.insertDiscordUser(request.body);
+      } catch (err) {
+        throw { statusCode: 409, message: 'User already exists' };
+      }
       return result[0];
     },
   });

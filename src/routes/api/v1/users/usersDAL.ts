@@ -65,7 +65,7 @@ type DiscordUserRequestDTO = Pick<
   | 'updated_at'
 >;
 
-type UserResponseDTO = Pick<
+export type UserResponseDTO = Pick<
   UserDBObject,
   | 'id'
   | 'username'
