@@ -31,7 +31,7 @@ export class UsersDB extends DBClient {
   }
 }
 
-interface UserDBObject {
+export interface UserDBObject {
   id: number;
   username: string;
   password_hash: string;

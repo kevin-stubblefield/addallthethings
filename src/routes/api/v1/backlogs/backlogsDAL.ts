@@ -1,12 +1,31 @@
 import { Knex } from 'knex';
 import { DBClient } from '../../../../interfaces/dbClient';
+import { UserDBObject } from '../users/usersDAL';
 
 export class BacklogsDB extends DBClient {
   constructor(db: Knex<any, unknown[]>) {
     super(db);
   }
 
-  async createBacklog(backlog: BacklogRequestDTO): Promise<BacklogResponseDTO> {
+  async createBacklog(
+    backlog: BacklogRequestDTO | DiscordBacklogRequestDTO
+  ): Promise<BacklogResponseDTO> {
+    let user_id: number;
+    if ('discord_user_id' in backlog) {
+      let result = await this.db<UserDBObject>('users')
+        .where('discord_user_id', backlog.discord_user_id)
+        .select('id');
+
+      user_id = result[0].id;
+
+      if (user_id !== null) {
+        backlog.user_id = user_id;
+        delete backlog.discord_user_id;
+      } else {
+        throw new Error('User not found');
+      }
+    }
+
     return await this.db<BacklogDBObject>('backlogs')
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .insert(backlog);
@@ -37,6 +56,7 @@ export class BacklogsDB extends DBClient {
     backlog: BacklogRequestDTO
   ): Promise<BacklogResponseDTO> {
     backlog.updated_at = new Date();
+
     const result = await this.db<BacklogDBObject>('backlogs')
       .where('id', id)
       .update(backlog, ['id', 'name', 'description', 'user_id', 'category']);
@@ -79,6 +99,10 @@ export type BacklogRequestDTO = Pick<
   BacklogDBObject,
   'name' | 'description' | 'user_id' | 'category' | 'updated_at'
 >;
+
+export type DiscordBacklogRequestDTO = BacklogRequestDTO & {
+  discord_user_id?: string;
+};
 
 type BacklogResponseDTO = Pick<
   BacklogDBObject,

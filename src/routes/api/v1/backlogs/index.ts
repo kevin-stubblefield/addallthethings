@@ -5,7 +5,11 @@ import {
   BacklogEntryResponseDTO,
   BacklogEntryStatus,
 } from './backlogEntriesDAL';
-import { BacklogRequestDTO, BacklogsDB } from './backlogsDAL';
+import {
+  BacklogRequestDTO,
+  BacklogsDB,
+  DiscordBacklogRequestDTO,
+} from './backlogsDAL';
 import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
 interface BacklogRetrieveAllRequest extends RequestGenericInterface {
@@ -23,7 +27,7 @@ interface BacklogRetrieveOneRequest extends RequestGenericInterface {
 }
 
 interface BacklogCreateRequest extends RequestGenericInterface {
-  Body: BacklogRequestDTO;
+  Body: BacklogRequestDTO | DiscordBacklogRequestDTO;
 }
 
 interface BacklogEntryCreateRequest extends RequestGenericInterface {
@@ -72,11 +76,19 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       description: 'Create backlog',
       body: {
         type: 'object',
-        required: ['user_id'],
+        oneOf: [
+          {
+            required: ['user_id'],
+          },
+          {
+            required: ['discord_user_id'],
+          },
+        ],
         properties: {
           name: { type: 'string' },
           description: { type: 'string' },
           user_id: { type: 'integer', minimum: 1 },
+          discord_user_id: { type: 'string' },
           category: { type: 'integer', minimum: 0 },
         },
         response: {
