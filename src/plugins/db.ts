@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import knex, { Knex } from 'knex';
+import knex from 'knex';
 const DbMigrate = require('db-migrate');
 
 function runMigrations(): Promise<object[]> {
@@ -24,7 +24,10 @@ export default fp(
       connection: fastify.config.postgresUri,
     });
 
-    fastify.decorate('db', db);
+    fastify.decorate('db', db).addHook('onClose', async (instance, done) => {
+      await db.destroy();
+      done();
+    });
 
     const migrationResults = await runMigrations();
 
@@ -37,9 +40,3 @@ export default fp(
   },
   { name: 'db' }
 );
-
-declare module 'fastify' {
-  export interface FastifyInstance {
-    db: Knex<any, unknown[]>;
-  }
-}

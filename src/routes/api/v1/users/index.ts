@@ -63,7 +63,7 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
         },
       },
       response: {
-        200: UserSchema,
+        201: UserSchema,
       },
     },
     handler: async (request, reply) => {
@@ -73,6 +73,8 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
       } catch (err) {
         throw { statusCode: 409, message: 'User already exists' };
       }
+
+      reply.statusCode = 201;
       return result[0];
     },
   });

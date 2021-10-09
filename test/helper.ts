@@ -2,31 +2,38 @@
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import App from '../src/app';
-import * as tap from 'tap';
 
-export type Test = typeof tap['Test']['prototype'];
+const clearDatabaseSql = `DELETE FROM backlog_entries;
+  DELETE FROM media;
+  DELETE FROM media_types;
+  DELETE FROM backlogs;
+  DELETE FROM users;`;
 
-// Fill in this config with all the configurations
-// needed for testing the application
-async function config() {
-  return {};
-}
+export function build() {
+  const app = Fastify({
+    logger: {
+      level: process.env.LOG_LEVEL || 'silent',
+    },
+    pluginTimeout: 2 * 60 * 1000,
+  });
 
-// Automatically build and tear down our instance
-async function build(t: Test) {
-  const app = Fastify();
+  beforeAll(async () => {
+    app.register(fp(App));
+    await app.ready();
+    await app.db.raw(clearDatabaseSql);
+  });
 
-  // fastify-plugin ensures that all decorators
-  // are exposed for testing purposes, this is
-  // different from the production setup
-  void app.register(fp(App), await config());
+  beforeEach(async () => {
+    await app.db.raw(clearDatabaseSql);
+  });
 
-  await app.ready();
+  afterEach(async () => {
+    await app.db.raw(clearDatabaseSql);
+  });
 
-  // Tear down our app after we are done
-  t.teardown(() => void app.close());
+  afterAll(async () => {
+    await app.close();
+  });
 
   return app;
 }
-
-export { config, build };

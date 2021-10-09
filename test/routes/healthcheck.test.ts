@@ -1,12 +1,13 @@
-import { test } from 'tap';
 import { build } from '../helper';
 
-test('healthcheck route', async (t) => {
-  const app = await build(t);
+describe('healthcheck route', () => {
+  const app = build();
 
-  const res = await app.inject({
-    url: '/',
+  test('should return 200 when app is online', async () => {
+    const res = await app.inject({
+      url: '/',
+    });
+
+    expect(res.statusCode).toEqual(200);
   });
-
-  t.equal(res.statusCode, 200);
 });

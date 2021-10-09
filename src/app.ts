@@ -1,6 +1,7 @@
 import { join } from 'path';
 import AutoLoad from 'fastify-autoload';
 import { FastifyPluginAsync } from 'fastify';
+import { Knex } from 'knex';
 
 function loadEnv(key: string): string {
   const envVar = process.env[key];
@@ -50,5 +51,6 @@ export { app };
 declare module 'fastify' {
   export interface FastifyInstance {
     config: AppConfig;
+    db: Knex<any, unknown[]>;
   }
 }
