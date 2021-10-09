@@ -92,12 +92,14 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
           category: { type: 'integer', minimum: 0 },
         },
         response: {
-          200: BacklogSchema,
+          201: BacklogSchema,
         },
       },
     },
     handler: async (request, reply) => {
       const newBacklog = await backlogsDb.createBacklog(request.body);
+
+      reply.statusCode = 201;
       return newBacklog;
     },
   });

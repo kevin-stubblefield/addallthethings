@@ -26,9 +26,11 @@ export class BacklogsDB extends DBClient {
       }
     }
 
-    return await this.db<BacklogDBObject>('backlogs')
+    const result = await this.db('backlogs')
       .returning(['id', 'name', 'description', 'user_id', 'category'])
-      .insert(backlog);
+      .insert<BacklogDBObject[]>(backlog);
+
+    return result[0];
   }
 
   async getBacklogs(
