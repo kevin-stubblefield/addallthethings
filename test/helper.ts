@@ -71,6 +71,23 @@ export async function createTestBacklog(
   });
 }
 
+export async function createTestBacklogEntry(
+  app: FastifyInstance,
+  backlog: LightMyRequestResponse,
+  mediaId: number
+): Promise<LightMyRequestResponse> {
+  const createPayload = {
+    media_id: mediaId,
+    status: 0,
+  };
+
+  return await app.inject({
+    url: `/api/v1/backlogs/${backlog.json().id}/entries`,
+    method: 'POST',
+    payload: createPayload,
+  });
+}
+
 export async function getGames(
   app: FastifyInstance
 ): Promise<LightMyRequestResponse> {

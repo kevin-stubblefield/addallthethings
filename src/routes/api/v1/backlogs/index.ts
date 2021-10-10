@@ -307,19 +307,10 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     handler: async (request, reply) => {
       let result: BacklogEntryResponseDTO;
 
-      try {
-        result = await entriesDb.updateBacklogEntry(
-          request.params.id,
-          request.body.status
-        );
-      } catch (err) {
-        throw {
-          statusCode: 404,
-          message: 'Media not found',
-          errorMessage: `${err}`,
-          internalError: err,
-        };
-      }
+      result = await entriesDb.updateBacklogEntry(
+        request.params.id,
+        request.body.status
+      );
 
       return result;
     },
@@ -343,11 +334,6 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const entryId = request.params.id;
-      const exists = await entriesDb.backlogEntryExists(entryId);
-
-      if (!exists) {
-        throw { statusCode: 404, message: 'Backlog entry not found' };
-      }
 
       await entriesDb.deleteBacklogEntry(entryId);
 
