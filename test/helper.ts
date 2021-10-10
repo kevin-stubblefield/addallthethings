@@ -1,5 +1,5 @@
 // This file contains code that we reuse between our tests.
-import Fastify from 'fastify';
+import Fastify, { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import fp from 'fastify-plugin';
 import App from '../src/app';
 
@@ -36,4 +36,21 @@ export function build() {
   });
 
   return app;
+}
+
+export async function createTestUser(
+  app: FastifyInstance
+): Promise<LightMyRequestResponse> {
+  const userPayload = {
+    discord_username: 'test_username',
+    discord_discriminator: '1234',
+    discord_tag: 'test_username#1234',
+    discord_user_id: '1235468436206186564',
+  };
+
+  return await app.inject({
+    url: '/api/v1/users',
+    method: 'POST',
+    payload: userPayload,
+  });
 }
