@@ -4,10 +4,8 @@ import fp from 'fastify-plugin';
 import App from '../src/app';
 
 const clearDatabaseSql = `DELETE FROM backlog_entries;
-  DELETE FROM media;
-  DELETE FROM media_types;
   DELETE FROM backlogs;
-  DELETE FROM users;`;
+  DELETE FROM users WHERE discord_username LIKE '%test%';`;
 
 export function build() {
   const app = Fastify({
@@ -70,5 +68,28 @@ export async function createTestBacklog(
     url: '/api/v1/backlogs',
     method: 'POST',
     payload: createPayload,
+  });
+}
+
+export async function getGames(
+  app: FastifyInstance
+): Promise<LightMyRequestResponse> {
+  return await app.inject({
+    url: '/api/v1/games',
+    method: 'GET',
+  });
+}
+
+export async function createTestGames(
+  app: FastifyInstance
+): Promise<LightMyRequestResponse> {
+  const mediaPayload = {
+    ids: [114283, 144051, 19614, 119257, 146112, 6706, 45165],
+  };
+
+  return await app.inject({
+    url: '/api/v1/games',
+    method: 'POST',
+    payload: mediaPayload,
   });
 }

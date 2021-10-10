@@ -2,7 +2,7 @@ import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
 import { Token } from '../../../../interfaces/httpClient';
 import { IGDBAuthApi, IGDBApi } from './gamesApi';
 import { GamesDB } from './gamesDAL';
-import { GameSchema } from './schemas';
+import { APIGameSchema, DBGameSchema } from './schemas';
 
 interface GameSearchRequest extends RequestGenericInterface {
   Querystring: {
@@ -28,6 +28,21 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
   const db = new GamesDB(fastify.db);
   const sourceName = 'IGDB';
 
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      tags: ['Games'],
+      description: 'Get games from db',
+      response: {
+        200: { type: 'array', items: DBGameSchema },
+      },
+    },
+    handler: async (request, reply) => {
+      return await db.getGames();
+    },
+  });
+
   fastify.route<GameRetrieveRequest>({
     method: 'POST',
     url: '/',
@@ -48,7 +63,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
       response: {
         200: {
           type: 'array',
-          items: GameSchema,
+          items: APIGameSchema,
         },
       },
     },
@@ -74,7 +89,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
       response: {
         200: {
           type: 'array',
-          items: GameSchema,
+          items: APIGameSchema,
         },
       },
     },

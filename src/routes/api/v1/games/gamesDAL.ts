@@ -30,4 +30,8 @@ export class GamesDB extends MediaDB {
       await this.db<MediumDBObject>('media').insert(gamesToInsert);
     }
   }
+
+  async getGames(): Promise<MediumDBObject[]> {
+    return await this.db('media').where('type_id', 1);
+  }
 }

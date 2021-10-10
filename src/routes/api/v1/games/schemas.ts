@@ -1,4 +1,4 @@
-export const GameSchema = {
+export const APIGameSchema = {
   type: 'object',
   properties: {
     id: { type: 'string' },
@@ -10,5 +10,18 @@ export const GameSchema = {
     rating: { type: 'number' },
     url: { type: 'string' },
     first_release_date: { type: 'number' },
+  },
+};
+
+export const DBGameSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'integer' },
+    source_name: { type: 'string' },
+    source_api_title: { type: 'string' },
+    source_api_url: { type: 'string' },
+    source_api_id: { type: 'string' },
+    source_webpage_url: { type: 'string' },
+    type_id: { type: 'integer' },
   },
 };

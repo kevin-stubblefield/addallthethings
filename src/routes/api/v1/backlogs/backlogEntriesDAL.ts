@@ -9,9 +9,11 @@ export class BacklogEntriesDB extends DBClient {
   async createBacklogEntry(
     backlogEntry: BacklogEntryRequestDTO
   ): Promise<BacklogEntryResponseDTO> {
-    return await this.db<BacklogEntryDBObject>('backlog_entries')
+    const result = await this.db('backlog_entries')
       .returning(['id', 'backlog_id', 'media_id', 'status'])
-      .insert(backlogEntry);
+      .insert<BacklogEntryResponseDTO[]>(backlogEntry);
+
+    return result[0];
   }
 
   async getBacklogEntries(
@@ -27,14 +29,10 @@ export class BacklogEntriesDB extends DBClient {
     id: number,
     status: BacklogEntryStatus
   ): Promise<BacklogEntryResponseDTO> {
-    const result = await this.db<BacklogEntryDBObject>('backlog_entries')
+    const result = await this.db('backlog_entries')
       .where('id', id)
-      .update({ status, updated_at: new Date() }, [
-        'id',
-        'backlog_id',
-        'media_id',
-        'status',
-      ]);
+      .returning(['id', 'backlog_id', 'media_id', 'status'])
+      .update<BacklogEntryResponseDTO[]>({ status, updated_at: new Date() });
 
     return result[0];
   }

@@ -199,11 +199,6 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       const backlogId = request.params.id;
-      const exists = await backlogsDb.backlogExists(backlogId);
-
-      if (!exists) {
-        throw { statusCode: 404, message: 'Backlog not found' };
-      }
 
       await backlogsDb.deleteBacklog(backlogId);
 
@@ -233,7 +228,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
         },
       },
       response: {
-        200: BacklogEntrySchema,
+        201: BacklogEntrySchema,
       },
     },
     handler: async (request, reply) => {
@@ -254,6 +249,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
         };
       }
 
+      reply.statusCode = 201;
       return result;
     },
   });
