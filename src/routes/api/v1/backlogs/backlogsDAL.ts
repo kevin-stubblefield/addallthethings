@@ -61,7 +61,8 @@ export class BacklogsDB extends DBClient {
 
     const result = await this.db<BacklogDBObject>('backlogs')
       .where('id', id)
-      .update(backlog, ['id', 'name', 'description', 'user_id', 'category']);
+      .returning(['id', 'name', 'description', 'user_id', 'category'])
+      .update<BacklogResponseDTO[]>(backlog);
 
     return result[0];
   }

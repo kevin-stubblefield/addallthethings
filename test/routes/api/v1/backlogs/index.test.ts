@@ -38,4 +38,39 @@ describe('backlog routes', () => {
     expect(backlogRes.json()).toHaveLength(2);
     expect(backlogRes.json()[0]).toMatchObject(backlogObject.json());
   });
+
+  test('should return a specified backlog', async () => {
+    const userRes = await createTestUser(app);
+
+    const backlogObject = await createTestBacklog(app, userRes);
+
+    const backlogRes = await app.inject({
+      url: `/api/v1/backlogs/${backlogObject.json().id}`,
+      method: 'GET',
+    });
+
+    expect(backlogRes.statusCode).toBe(200);
+    expect(backlogRes.json()).toMatchObject(backlogObject.json());
+  });
+
+  test('should update the specified backlog', async () => {
+    const userRes = await createTestUser(app);
+
+    const backlogObject = await createTestBacklog(app, userRes);
+
+    const updatePayload = {
+      name: 'Updated Test Backlog',
+      description: 'Updated test description',
+      category: 1,
+    };
+
+    const backlogRes = await app.inject({
+      url: `/api/v1/backlogs/${backlogObject.json().id}`,
+      method: 'PATCH',
+      payload: updatePayload,
+    });
+
+    expect(backlogRes.statusCode).toBe(200);
+    expect(backlogRes.json()).toMatchObject(updatePayload);
+  });
 });
