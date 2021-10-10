@@ -53,23 +53,6 @@ describe('backlog routes', () => {
     expect(backlogRes.json().user_id).toBe(userObject.json().id);
   });
 
-  test('create backlog should 404 if user not found', async () => {
-    const createPayload = {
-      name: 'Test Backlog',
-      description: 'Test description',
-      user_id: 684513216846513,
-      category: 0,
-    };
-
-    const backlogRes = await app.inject({
-      url: '/api/v1/backlogs',
-      method: 'POST',
-      payload: createPayload,
-    });
-
-    expect(backlogRes.statusCode).toBe(404);
-  });
-
   test('should return all backlogs for a given user', async () => {
     const userObject = await createTestUser(app);
 
