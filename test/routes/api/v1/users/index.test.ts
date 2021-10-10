@@ -1,4 +1,4 @@
-import { build } from '../../../../helper';
+import { build, createTestUser } from '../../../../helper';
 
 describe('user routes', () => {
   const app = build();
@@ -46,25 +46,14 @@ describe('user routes', () => {
 
   test('should retrieve a user by their discord id', async () => {
     // create user to be retrieved
-    const expected = {
-      discord_username: 'test_username',
-      discord_discriminator: '1234',
-      discord_tag: 'test_username#1234',
-      discord_user_id: '1235468436206186564',
-    };
-
-    await app.inject({
-      url: '/api/v1/users',
-      method: 'POST',
-      payload: expected,
-    });
+    const userRes = await createTestUser(app);
 
     const res = await app.inject({
-      url: `/api/v1/users/${expected.discord_user_id}`,
+      url: `/api/v1/users/${userRes.json().discord_user_id}`,
       method: 'GET',
     });
 
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchObject(expected);
+    expect(res.json()).toMatchObject(userRes.json());
   });
 });
