@@ -54,3 +54,21 @@ export async function createTestUser(
     payload: userPayload,
   });
 }
+
+export async function createTestBacklog(
+  app: FastifyInstance,
+  user: LightMyRequestResponse
+): Promise<LightMyRequestResponse> {
+  const createPayload = {
+    name: 'Test Backlog',
+    description: 'Test description',
+    user_id: user.json().id,
+    category: 0,
+  };
+
+  return await app.inject({
+    url: '/api/v1/backlogs',
+    method: 'POST',
+    payload: createPayload,
+  });
+}
