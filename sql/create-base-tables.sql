@@ -40,7 +40,7 @@ CREATE TABLE media_types (
 CREATE TABLE media (
 	id SERIAL PRIMARY KEY,
 	source_name VARCHAR(50) NOT NULL,
-	source_api_title VARCHAR(100) NOT NULL,
+	source_api_title VARCHAR(255) NOT NULL,
 	source_api_url TEXT NOT NULL DEFAULT '',
 	source_api_id TEXT NOT NULL,
 	source_webpage_url TEXT NOT NULL DEFAULT '',
