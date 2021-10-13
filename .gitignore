@@ -67,5 +67,6 @@ dist
 .env
 
 runTest.sh
+runMigrations.sh
 
 /data

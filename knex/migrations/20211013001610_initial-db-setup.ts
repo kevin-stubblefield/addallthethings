@@ -51,9 +51,9 @@ export async function up(knex: Knex): Promise<void> {
       table.increments('id');
       table.string('label', 50).notNullable().unique();
       table.boolean('is_global').notNullable().defaultTo(false);
-      table.integer('user_id').unsigned();
+      table.integer('created_by').unsigned();
       table
-        .foreign('user_id')
+        .foreign('created_by')
         .references(`${userTable}.id`)
         .onDelete('CASCADE');
     });
@@ -100,6 +100,27 @@ export async function up(knex: Knex): Promise<void> {
         .onDelete('CASCADE');
     });
   }
+
+  const winter = [
+    {
+      username: 'Winterfresh',
+      discord_username: 'Winterfresh92',
+      discord_discriminator: '0961',
+      discord_tag: 'Winterfresh92#0961',
+      discord_user_id: '313060065181433867',
+    },
+  ];
+
+  const mediaTypes = [
+    { label: 'Game', is_global: true, created_by: 1 },
+    { label: 'TV Show', is_global: true, created_by: 1 },
+    { label: 'Movie', is_global: true, created_by: 1 },
+    { label: 'Anime', is_global: true, created_by: 1 },
+  ];
+
+  // Inserts seed entries
+  await knex(userTable).insert(winter);
+  await knex(mediaTypeTable).insert(mediaTypes);
 }
 
 export async function down(knex: Knex): Promise<void> {
