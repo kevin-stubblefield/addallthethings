@@ -1,20 +1,9 @@
 import fp from 'fastify-plugin';
-import knex from 'knex';
-const DbMigrate = require('db-migrate');
+import knex, { Knex } from 'knex';
+import knexConfig from '../../knexfile';
 
-function runMigrations(): Promise<object[]> {
-  return new Promise((resolve, reject) => {
-    const dbMigrate = DbMigrate.getInstance(true);
-    dbMigrate.silence(true);
-
-    dbMigrate.up((error: any, results = []) => {
-      if (error) {
-        return reject(error);
-      }
-
-      resolve(results);
-    });
-  });
+async function runMigrations(config: Knex.Config): Promise<any> {
+  return await knex(config).migrate.latest();
 }
 
 export default fp(
@@ -29,7 +18,12 @@ export default fp(
       done();
     });
 
-    const migrationResults = await runMigrations();
+    const dbConfig =
+      process.env.NODE_ENV || 'development' === 'development'
+        ? knexConfig.development
+        : knexConfig.production;
+
+    const migrationResults = await runMigrations(dbConfig);
 
     if (migrationResults.length > 0) {
       fastify.log.info({
