@@ -21,7 +21,7 @@ export default fp(
 
     const migrationResults = await runMigrations(db);
 
-    if (migrationResults.length > 0) {
+    if (migrationResults[1].length > 0) {
       fastify.log.info({
         migrationsCount: migrationResults.length,
         msg: 'Successful migrations run',
