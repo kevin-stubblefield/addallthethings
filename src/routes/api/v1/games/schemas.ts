@@ -22,6 +22,6 @@ export const DBGameSchema = {
     source_api_url: { type: 'string' },
     source_api_id: { type: 'string' },
     source_webpage_url: { type: 'string' },
-    type_id: { type: 'integer' },
+    type: { type: 'string' },
   },
 };

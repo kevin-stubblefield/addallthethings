@@ -89,7 +89,10 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
           description: { type: 'string' },
           user_id: { type: 'integer', minimum: 1 },
           discord_user_id: { type: 'string' },
-          category: { type: 'integer', minimum: 0 },
+          category: {
+            type: 'string',
+            enum: ['any', 'game', 'tv show', 'movie', 'anime'],
+          },
         },
         response: {
           201: BacklogSchema,
@@ -161,7 +164,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       params: {
         type: 'object',
         properties: {
-          id: { type: 'number' },
+          id: { type: 'integer', minimum: 1 },
         },
       },
       body: {
@@ -169,7 +172,10 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
         properties: {
           name: { type: 'string' },
           description: { type: 'string' },
-          category: { type: 'integer', minimum: 0 },
+          category: {
+            type: 'string',
+            enum: ['any', 'game', 'tv show', 'movie', 'anime'],
+          },
         },
       },
       response: {
@@ -218,7 +224,10 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
         type: 'object',
         properties: {
           media_id: { type: 'integer' },
-          status: { type: 'integer' },
+          status: {
+            type: 'string',
+            enum: ['not_started', 'in_progress', 'completed'],
+          },
         },
       },
       params: {
@@ -294,7 +303,10 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       body: {
         type: 'object',
         properties: {
-          status: { type: 'integer' },
+          status: {
+            type: 'string',
+            enum: ['not_started', 'in_progress', 'completed'],
+          },
         },
       },
       params: {

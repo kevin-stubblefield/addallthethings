@@ -6,7 +6,10 @@ export const BacklogSchema = {
     name: { type: 'string' },
     description: { type: 'string' },
     user_id: { type: 'integer', minimum: 1 },
-    category: { type: 'integer', minimum: 0 },
+    category: {
+      type: 'string',
+      enum: ['any', 'game', 'tv show', 'movie', 'anime'],
+    },
   },
 };
 
@@ -17,7 +20,7 @@ export const BacklogEntrySchema = {
     id: { type: 'integer' },
     backlog_id: { type: 'integer' },
     media_id: { type: 'integer' },
-    status: { type: 'integer' },
+    status: { type: 'string' },
     source_api_id: { type: 'string' },
   },
 };

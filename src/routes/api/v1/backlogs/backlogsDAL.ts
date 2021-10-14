@@ -85,17 +85,10 @@ export interface BacklogDBObject {
   name: string;
   description: string;
   user_id: number;
-  category: BacklogCategory;
+  category: string;
+  privacy: string;
   created_at: Date;
   updated_at: Date;
-}
-
-export enum BacklogCategory {
-  Any,
-  Game,
-  TVShow,
-  Movie,
-  Anime,
 }
 
 export type BacklogRequestDTO = Pick<

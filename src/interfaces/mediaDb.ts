@@ -2,11 +2,11 @@ import { Knex } from 'knex';
 import { DBClient } from './dbClient';
 
 export abstract class MediaDB extends DBClient {
-  protected typeId: number;
+  protected type: string;
 
-  constructor(db: Knex<any, unknown[]>, typeId: number) {
+  constructor(db: Knex<any, unknown[]>, type: string) {
     super(db);
-    this.typeId = typeId;
+    this.type = type;
   }
 
   async getApiIdsNotInDB(apiIds: string[]): Promise<string[]> {
@@ -29,7 +29,7 @@ export interface MediumDBObject {
   source_api_id: string;
   source_api_url?: string;
   source_webpage_url?: string;
-  type_id: number;
+  type: string;
 }
 
 declare module 'knex/types/tables' {

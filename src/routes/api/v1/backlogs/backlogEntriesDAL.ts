@@ -53,9 +53,9 @@ export class BacklogEntriesDB extends DBClient {
 }
 
 export enum BacklogEntryStatus {
-  NotStarted,
-  InProgress,
-  Complete,
+  NotStarted = 'not_started',
+  InProgress = 'in_progress',
+  Completed = 'completed',
 }
 
 interface BacklogEntryDBObject {

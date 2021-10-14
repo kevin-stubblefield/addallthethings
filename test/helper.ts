@@ -61,7 +61,7 @@ export async function createTestBacklog(
     name: 'Test Backlog',
     description: 'Test description',
     user_id: user.json().id,
-    category: 0,
+    category: 'any',
   };
 
   return await app.inject({
@@ -78,7 +78,7 @@ export async function createTestBacklogEntry(
 ): Promise<LightMyRequestResponse> {
   const createPayload = {
     media_id: mediaId,
-    status: 0,
+    status: 'not_started',
   };
 
   return await app.inject({

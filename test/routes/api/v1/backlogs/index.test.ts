@@ -17,7 +17,7 @@ describe('backlog routes', () => {
       name: 'Test Backlog',
       description: 'Test description',
       user_id: userObject.json().id,
-      category: 0,
+      category: 'any',
     };
 
     const backlogRes = await app.inject({
@@ -37,7 +37,7 @@ describe('backlog routes', () => {
       name: 'Test Backlog',
       description: 'Test description',
       discord_user_id: userObject.json().discord_user_id,
-      category: 0,
+      category: 'any',
     };
 
     const backlogRes = await app.inject({
@@ -91,7 +91,7 @@ describe('backlog routes', () => {
     const updatePayload = {
       name: 'Updated Test Backlog',
       description: 'Updated test description',
-      category: 1,
+      category: 'game',
     };
 
     const backlogRes = await app.inject({
@@ -129,7 +129,7 @@ describe('backlog entry routes', () => {
 
     const entryPayload = {
       media_id: games.json()[0].id,
-      status: 0,
+      status: 'not_started',
     };
 
     const entryRes = await app.inject({
@@ -150,7 +150,7 @@ describe('backlog entry routes', () => {
 
     const entryPayload = {
       media_id: 0,
-      status: 0,
+      status: 'not_started',
     };
 
     const entryRes = await app.inject({
@@ -171,7 +171,7 @@ describe('backlog entry routes', () => {
 
     const entryPayload = {
       media_id: games.json()[0].id,
-      status: 0,
+      status: 'not_started',
     };
 
     await app.inject({
@@ -218,7 +218,7 @@ describe('backlog entry routes', () => {
     );
 
     const updatePayload = {
-      status: 1,
+      status: 'in_progress',
     };
 
     const entryRes = await app.inject({

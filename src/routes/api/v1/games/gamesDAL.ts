@@ -4,7 +4,7 @@ import { GameApiDto } from './DTOs';
 
 export class GamesDB extends MediaDB {
   constructor(db: Knex<any, unknown[]>) {
-    super(db, 1);
+    super(db, 'game');
   }
 
   async createGames(games: GameApiDto[], sourceName: string): Promise<void> {
@@ -20,7 +20,7 @@ export class GamesDB extends MediaDB {
           source_api_id: game.id.toString(),
           source_api_title: game.name,
           source_webpage_url: game.url,
-          type_id: this.typeId,
+          type: this.type,
         };
 
         return gameToInsert;
@@ -32,6 +32,6 @@ export class GamesDB extends MediaDB {
   }
 
   async getGames(): Promise<MediumDBObject[]> {
-    return await this.db('media').where('type_id', 1);
+    return await this.db('media').where('type', 'game');
   }
 }

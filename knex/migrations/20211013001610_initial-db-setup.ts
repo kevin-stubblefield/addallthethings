@@ -19,7 +19,11 @@ export async function up(knex: Knex): Promise<void> {
       table.string('discord_username', 40).notNullable().defaultTo(empty);
       table.string('discord_discriminator', 6).notNullable().defaultTo(empty);
       table.string('discord_tag', 46).notNullable().defaultTo(empty);
-      table.string('discord_user_id', 25).notNullable().defaultTo(empty);
+      table
+        .string('discord_user_id', 25)
+        .notNullable()
+        .defaultTo(empty)
+        .unique();
       table.timestamps(true, true);
     });
   }
@@ -67,6 +71,7 @@ export async function up(knex: Knex): Promise<void> {
       table.string('source_api_title').notNullable();
       table.string('source_api_url').notNullable().defaultTo(empty);
       table.string('source_api_id').notNullable();
+      table.string('source_webpage_url').notNullable().defaultTo(empty);
       table.string('type');
       table.unique(['source_name', 'source_api_id'], {
         indexName: 'media_unique_source_name_id_index',
@@ -112,10 +117,10 @@ export async function up(knex: Knex): Promise<void> {
   ];
 
   const mediaTypes = [
-    { label: 'Game', is_global: true, created_by: 1 },
-    { label: 'TV Show', is_global: true, created_by: 1 },
-    { label: 'Movie', is_global: true, created_by: 1 },
-    { label: 'Anime', is_global: true, created_by: 1 },
+    { label: 'game', is_global: true, created_by: 1 },
+    { label: 'tv show', is_global: true, created_by: 1 },
+    { label: 'movie', is_global: true, created_by: 1 },
+    { label: 'anime', is_global: true, created_by: 1 },
   ];
 
   // Inserts seed entries
