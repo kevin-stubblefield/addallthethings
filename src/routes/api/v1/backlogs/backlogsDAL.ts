@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { DBClient } from '../../../../interfaces/dbClient';
-import { UserDBObject } from '../users/usersDAL';
+import { UserDB } from '../../../../models/user.model';
 
 export class BacklogsDB extends DBClient {
   constructor(db: Knex<any, unknown[]>) {
@@ -10,9 +10,9 @@ export class BacklogsDB extends DBClient {
   async createBacklog(
     backlog: BacklogRequestDTO | DiscordBacklogRequestDTO
   ): Promise<BacklogResponseDTO> {
-    let user_id: number;
+    let user_id: number | undefined;
     if ('discord_user_id' in backlog) {
-      let result = await this.db<UserDBObject>('users')
+      let result = await this.db<UserDB>('users')
         .where('discord_user_id', backlog.discord_user_id)
         .select('id');
 
@@ -81,14 +81,14 @@ export class BacklogsDB extends DBClient {
 }
 
 export interface BacklogDBObject {
-  id: number;
-  name: string;
-  description: string;
-  user_id: number;
-  category: string;
-  privacy: string;
-  created_at: Date;
-  updated_at: Date;
+  id?: number;
+  name?: string;
+  description?: string;
+  user_id?: number;
+  category?: string;
+  privacy?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export type BacklogRequestDTO = Pick<

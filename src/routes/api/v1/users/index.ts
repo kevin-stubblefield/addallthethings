@@ -1,6 +1,7 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
+import { UserDB } from '../../../../models/user.model';
+import { services } from '../../../../services';
 import { UserSchema } from './schemas';
-import { UsersDB, UserResponseDTO } from './usersDAL';
 
 interface UserRetrieveByDiscordIdRequest extends RequestGenericInterface {
   Params: {
@@ -18,7 +19,7 @@ interface DiscordUserCreateRequest extends RequestGenericInterface {
 }
 
 const users: FastifyPluginAsync = async function (fastify, opts) {
-  const db = new UsersDB(fastify.db);
+  const db = services(fastify.db).userService;
 
   fastify.route<UserRetrieveByDiscordIdRequest>({
     method: 'GET',
@@ -67,7 +68,7 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      let result: UserResponseDTO[];
+      let result: UserDB;
       try {
         result = await db.insertDiscordUser(request.body);
       } catch (err) {
@@ -75,7 +76,7 @@ const users: FastifyPluginAsync = async function (fastify, opts) {
       }
 
       reply.statusCode = 201;
-      return result[0];
+      return result;
     },
   });
 };
