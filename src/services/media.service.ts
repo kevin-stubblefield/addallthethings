@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { MediaDB } from '../interfaces/mediaDb';
+import { MediaDB } from '../models/media.model';
 
 export class MediaDBService {
   readonly mediaTable = 'media';
