@@ -1,8 +1,8 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
-import { Token } from '../../../../interfaces/httpClient';
 import { services } from '../../../../services';
-import { IGDBAuthApi, IGDBApi } from './gamesApi';
+import { IGDBAuthApi, IGDBApi } from '../../../../http';
 import { APIGameSchema, DBGameSchema } from './schemas';
+import { Token } from '../../../../http/base.http';
 
 interface GameSearchRequest extends RequestGenericInterface {
   Querystring: {

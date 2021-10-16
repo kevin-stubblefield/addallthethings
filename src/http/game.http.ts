@@ -1,18 +1,13 @@
-import {
-  HttpClient,
-  Token,
-  ApiRequestBodyWriter,
-} from '../../../../interfaces/httpClient';
-import { GameApi } from '../../../../models/media.model';
+import { GameApi } from '../models/media.model';
+import { ApiRequestBodyWriter, HttpClient, Token } from './base.http';
 
 export class IGDBAuthApi extends HttpClient {
-  private readonly clientId: string;
-  private readonly clientSecret: string;
-
-  constructor(baseURL: string, clientId: string, clientSecret: string) {
+  constructor(
+    baseURL: string,
+    protected clientId: string,
+    protected clientSecret: string
+  ) {
     super(baseURL);
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
   }
 
   async getToken(): Promise<Token> {
@@ -31,13 +26,12 @@ export class IGDBAuthApi extends HttpClient {
 }
 
 export class IGDBApi extends HttpClient {
-  private readonly clientId: string;
-  private readonly token: Token;
-
-  constructor(baseURL: string, clientId: string, token: Token) {
+  constructor(
+    baseURL: string,
+    protected clientId: string,
+    protected token: Token
+  ) {
     super(baseURL);
-    this.clientId = clientId;
-    this.token = token;
   }
 
   async searchGames(query: string, fields: string[] = []): Promise<GameApi[]> {
