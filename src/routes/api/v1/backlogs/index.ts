@@ -1,12 +1,7 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
 import { BacklogDBWithDiscordId } from '../../../../models/backlog.model';
+import { EntryDB, EntryStatus } from '../../../../models/entry.model';
 import { services } from '../../../../services';
-import {
-  BacklogEntriesDB,
-  BacklogEntryRequestDTO,
-  BacklogEntryResponseDTO,
-  BacklogEntryStatus,
-} from './backlogEntriesDAL';
 import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
 interface BacklogRetrieveAllRequest extends RequestGenericInterface {
@@ -30,7 +25,7 @@ interface BacklogCreateRequest extends RequestGenericInterface {
 interface BacklogEntryCreateRequest extends RequestGenericInterface {
   Body: {
     media_id: number;
-    status: BacklogEntryStatus;
+    status: EntryStatus;
   };
   Params: {
     backlog_id: number;
@@ -45,7 +40,7 @@ interface BacklogEntryRetrieveRequest extends RequestGenericInterface {
 
 interface BacklogEntryUpdateRequest extends RequestGenericInterface {
   Body: {
-    status: BacklogEntryStatus;
+    status: EntryStatus;
   };
   Params: {
     id: number;
@@ -62,8 +57,9 @@ type BacklogUpdateRequest = BacklogRetrieveOneRequest &
   Omit<BacklogCreateRequest, 'user_id'>;
 
 const backlogs: FastifyPluginAsync = async function (fastify, opts) {
-  const backlogsDb = services(fastify.db).backlogService;
-  const entriesDb = new BacklogEntriesDB(fastify.db);
+  const dbServices = services(fastify.db);
+  const backlogsDb = dbServices.backlogService;
+  const entriesDb = dbServices.entryService;
 
   fastify.route<BacklogCreateRequest>({
     method: 'POST',
@@ -238,11 +234,11 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      const newEntry: BacklogEntryRequestDTO = {
+      const newEntry: EntryDB = {
         backlog_id: request.params.backlog_id,
         ...request.body,
       };
-      let result: BacklogEntryResponseDTO;
+      let result: EntryDB;
 
       try {
         result = await entriesDb.createBacklogEntry(newEntry);
@@ -314,7 +310,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      let result: BacklogEntryResponseDTO;
+      let result: EntryDB;
 
       result = await entriesDb.updateBacklogEntry(
         request.params.id,
