@@ -1,15 +1,12 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
+import { BacklogDBWithDiscordId } from '../../../../models/backlog.model';
+import { services } from '../../../../services';
 import {
   BacklogEntriesDB,
   BacklogEntryRequestDTO,
   BacklogEntryResponseDTO,
   BacklogEntryStatus,
 } from './backlogEntriesDAL';
-import {
-  BacklogRequestDTO,
-  BacklogsDB,
-  DiscordBacklogRequestDTO,
-} from './backlogsDAL';
 import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
 interface BacklogRetrieveAllRequest extends RequestGenericInterface {
@@ -27,7 +24,7 @@ interface BacklogRetrieveOneRequest extends RequestGenericInterface {
 }
 
 interface BacklogCreateRequest extends RequestGenericInterface {
-  Body: BacklogRequestDTO | DiscordBacklogRequestDTO;
+  Body: BacklogDBWithDiscordId;
 }
 
 interface BacklogEntryCreateRequest extends RequestGenericInterface {
@@ -65,7 +62,7 @@ type BacklogUpdateRequest = BacklogRetrieveOneRequest &
   Omit<BacklogCreateRequest, 'user_id'>;
 
 const backlogs: FastifyPluginAsync = async function (fastify, opts) {
-  const backlogsDb = new BacklogsDB(fastify.db);
+  const backlogsDb = services(fastify.db).backlogService;
   const entriesDb = new BacklogEntriesDB(fastify.db);
 
   fastify.route<BacklogCreateRequest>({
