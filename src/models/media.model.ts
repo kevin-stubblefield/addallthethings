@@ -1,6 +1,16 @@
+export interface MediaDB {
+  id?: number;
+  source_name?: string;
+  source_api_title?: string;
+  source_api_id?: string;
+  source_api_url?: string;
+  source_webpage_url?: string;
+  type?: string;
+}
+
 // api returns id as numbers
 // lesson learned here: always type this according to the api types
-export interface GameApiDto {
+export interface GameApi {
   id: number;
   name: string;
   rating?: number;

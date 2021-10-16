@@ -1,7 +1,7 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
 import { Token } from '../../../../interfaces/httpClient';
+import { services } from '../../../../services';
 import { IGDBAuthApi, IGDBApi } from './gamesApi';
-import { GamesDB } from './gamesDAL';
 import { APIGameSchema, DBGameSchema } from './schemas';
 
 interface GameSearchRequest extends RequestGenericInterface {
@@ -25,7 +25,7 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     clientSecret
   );
   const token: Token = await authApi.getToken();
-  const db = new GamesDB(fastify.db);
+  const db = services(fastify.db).gameDBService;
   const sourceName = 'IGDB';
 
   fastify.route({

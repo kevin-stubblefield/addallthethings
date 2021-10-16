@@ -1,13 +1,13 @@
 import { Knex } from 'knex';
-import { MediaDB, MediumDBObject } from '../../../../interfaces/mediaDb';
-import { GameApiDto } from './DTOs';
+import { MediaDB, GameApi } from '../models/media.model';
+import { MediaDBService } from './media.service';
 
-export class GamesDB extends MediaDB {
-  constructor(db: Knex<any, unknown[]>) {
-    super(db, 'game');
+export class GameDBService extends MediaDBService {
+  constructor(protected knex: Knex) {
+    super(knex, 'game');
   }
 
-  async createGames(games: GameApiDto[], sourceName: string): Promise<void> {
+  async createGames(games: GameApi[], sourceName: string): Promise<void> {
     const gamesNotInDB = await this.getApiIdsNotInDB(
       games.map((game) => game.id.toString())
     );
@@ -15,7 +15,7 @@ export class GamesDB extends MediaDB {
     const gamesToInsert = games
       .filter((game) => gamesNotInDB.includes(game.id.toString()))
       .map((game) => {
-        const gameToInsert: MediumDBObject = {
+        const gameToInsert: MediaDB = {
           source_name: sourceName,
           source_api_id: game.id.toString(),
           source_api_title: game.name,
@@ -27,11 +27,11 @@ export class GamesDB extends MediaDB {
       });
 
     if (gamesToInsert.length > 0) {
-      await this.db<MediumDBObject>('media').insert(gamesToInsert);
+      await this.knex<MediaDB>('media').insert(gamesToInsert);
     }
   }
 
-  async getGames(): Promise<MediumDBObject[]> {
-    return await this.db('media').where('type', 'game');
+  async getGames(): Promise<MediaDB[]> {
+    return await this.knex('media').where('type', 'game');
   }
 }

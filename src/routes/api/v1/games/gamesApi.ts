@@ -3,7 +3,7 @@ import {
   Token,
   ApiRequestBodyWriter,
 } from '../../../../interfaces/httpClient';
-import { GameApiDto } from './DTOs';
+import { GameApi } from '../../../../models/media.model';
 
 export class IGDBAuthApi extends HttpClient {
   private readonly clientId: string;
@@ -40,10 +40,7 @@ export class IGDBApi extends HttpClient {
     this.token = token;
   }
 
-  async searchGames(
-    query: string,
-    fields: string[] = []
-  ): Promise<GameApiDto[]> {
+  async searchGames(query: string, fields: string[] = []): Promise<GameApi[]> {
     let writer = new IGDBRequestBodyWriter();
     writer.field(fields);
     writer.search(query);
@@ -58,10 +55,7 @@ export class IGDBApi extends HttpClient {
     });
   }
 
-  async getGamesById(
-    ids: string[],
-    fields: string[] = []
-  ): Promise<GameApiDto[]> {
+  async getGamesById(ids: string[], fields: string[] = []): Promise<GameApi[]> {
     const idString = ids.join(',');
 
     let writer = new IGDBRequestBodyWriter();
