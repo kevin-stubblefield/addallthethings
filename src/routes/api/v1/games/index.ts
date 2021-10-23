@@ -7,6 +7,7 @@ import { Token } from '../../../../http/base.http';
 interface GameSearchRequest extends RequestGenericInterface {
   Querystring: {
     query: string;
+    limit: number;
   };
 }
 
@@ -96,8 +97,11 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     handler: async (request, reply) => {
       const gamesApi = new IGDBApi('https://api.igdb.com/v4', clientId, token);
 
-      const { query } = request.query;
-      const searchResults = await gamesApi.searchGames(query);
+      const { query, limit } = request.query;
+      const searchResults = await gamesApi.searchGames(
+        query.replaceAll('+', ' '),
+        limit
+      );
 
       await db.createGames(searchResults, sourceName);
 

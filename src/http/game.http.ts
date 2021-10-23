@@ -34,9 +34,14 @@ export class IGDBApi extends HttpClient {
     super(baseURL);
   }
 
-  async searchGames(query: string, fields: string[] = []): Promise<GameApi[]> {
+  async searchGames(
+    query: string,
+    limit: number = 10,
+    fields: string[] = []
+  ): Promise<GameApi[]> {
     let writer = new IGDBRequestBodyWriter();
     writer.field(fields);
+    writer.limit(limit);
     writer.search(query);
 
     const body = writer.writeRequestBody();
