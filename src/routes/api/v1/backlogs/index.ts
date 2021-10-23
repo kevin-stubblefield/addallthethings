@@ -1,12 +1,12 @@
 import { FastifyPluginAsync, RequestGenericInterface } from 'fastify';
-import { BacklogDBWithDiscordId } from '../../../../models/backlog.model';
+import { BacklogDB } from '../../../../models/backlog.model';
 import { EntryDB, EntryStatus } from '../../../../models/entry.model';
 import { services } from '../../../../services';
 import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
 interface BacklogRetrieveAllRequest extends RequestGenericInterface {
   Querystring: {
-    userId: number;
+    user_id: number;
     limit?: number;
     offset?: number;
   };
@@ -19,7 +19,7 @@ interface BacklogRetrieveOneRequest extends RequestGenericInterface {
 }
 
 interface BacklogCreateRequest extends RequestGenericInterface {
-  Body: BacklogDBWithDiscordId;
+  Body: BacklogDB;
 }
 
 interface BacklogEntryCreateRequest extends RequestGenericInterface {
@@ -81,7 +81,6 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
           name: { type: 'string' },
           description: { type: 'string' },
           user_id: { type: 'integer', minimum: 1 },
-          discord_user_id: { type: 'string' },
           category: {
             type: 'string',
             enum: ['any', 'game', 'tv show', 'movie', 'anime'],
@@ -119,11 +118,11 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      const { userId } = request.query;
+      const { user_id } = request.query;
       const limit = request.query.limit || 15;
       const offset = request.query.offset || 0;
 
-      return await backlogsDb.getBacklogs(userId, limit, offset);
+      return await backlogsDb.getBacklogs(user_id, limit, offset);
     },
   });
 

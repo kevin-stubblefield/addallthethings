@@ -6,22 +6,6 @@ export class BacklogService {
   constructor(private knex: Knex) {}
 
   async createBacklog(backlog: BacklogDBWithDiscordId): Promise<BacklogDB> {
-    let user_id: number | undefined;
-    if ('discord_user_id' in backlog) {
-      let result = await this.knex<BacklogDB>('users')
-        .where('discord_user_id', backlog.discord_user_id)
-        .select('id');
-
-      user_id = result[0].id;
-
-      if (user_id !== null) {
-        backlog.user_id = user_id;
-        delete backlog.discord_user_id;
-      } else {
-        throw new Error('User not found');
-      }
-    }
-
     const result = await this.knex('backlogs')
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .insert<BacklogDB[]>(backlog);
@@ -30,13 +14,13 @@ export class BacklogService {
   }
 
   async getBacklogs(
-    userId: number,
+    user_id: number,
     limit: number,
     offset: number
   ): Promise<BacklogDB[]> {
     return await this.knex<BacklogDB>('backlogs')
       .select('*')
-      .where('user_id', userId)
+      .where('user_id', user_id)
       .limit(limit)
       .offset(offset);
   }

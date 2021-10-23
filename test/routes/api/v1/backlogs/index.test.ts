@@ -30,29 +30,6 @@ describe('backlog routes', () => {
     expect(backlogRes.json()).toMatchObject(createPayload);
   });
 
-  test('should create a new backlog with discord user id', async () => {
-    const userObject = await createTestUser(app);
-
-    const createPayload = {
-      name: 'Test Backlog',
-      description: 'Test description',
-      discord_user_id: userObject.json().discord_user_id,
-      category: 'any',
-    };
-
-    const backlogRes = await app.inject({
-      url: '/api/v1/backlogs',
-      method: 'POST',
-      payload: createPayload,
-    });
-
-    expect(backlogRes.statusCode).toBe(201);
-    expect(backlogRes.json().name).toBe(createPayload.name);
-    expect(backlogRes.json().description).toBe(createPayload.description);
-    expect(backlogRes.json().category).toBe(createPayload.category);
-    expect(backlogRes.json().user_id).toBe(userObject.json().id);
-  });
-
   test('should return all backlogs for a given user', async () => {
     const userObject = await createTestUser(app);
 
@@ -60,7 +37,7 @@ describe('backlog routes', () => {
     await createTestBacklog(app, userObject);
 
     const backlogRes = await app.inject({
-      url: `/api/v1/backlogs?userId=${userObject.json().id}`,
+      url: `/api/v1/backlogs?user_id=${userObject.json().id}`,
       method: 'GET',
     });
 
