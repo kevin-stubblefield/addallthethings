@@ -8,7 +8,3 @@ export interface BacklogDB {
   created_at?: Date;
   updated_at?: Date;
 }
-
-export type BacklogDBWithDiscordId = BacklogDB & {
-  discord_user_id?: string;
-};

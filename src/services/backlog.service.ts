@@ -1,11 +1,11 @@
 import { Knex } from 'knex';
-import { BacklogDB, BacklogDBWithDiscordId } from '../models/backlog.model';
+import { BacklogDB } from '../models/backlog.model';
 
 export class BacklogService {
   readonly backlogTable = 'backlogs';
   constructor(private knex: Knex) {}
 
-  async createBacklog(backlog: BacklogDBWithDiscordId): Promise<BacklogDB> {
+  async createBacklog(backlog: BacklogDB): Promise<BacklogDB> {
     const result = await this.knex('backlogs')
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .insert<BacklogDB[]>(backlog);
