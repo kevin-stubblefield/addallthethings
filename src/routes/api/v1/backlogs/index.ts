@@ -143,7 +143,11 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       },
     },
     handler: async (request, reply) => {
-      return await backlogsDb.getBacklog(request.params.id);
+      const backlog = await backlogsDb.getBacklog(request.params.id);
+      if (backlog.id) {
+        backlog.entries = await entriesDb.getBacklogEntries(backlog.id);
+      }
+      return backlog;
     },
   });
 

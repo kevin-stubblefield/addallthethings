@@ -1,3 +1,5 @@
+import { EntryDB } from './entry.model';
+
 export interface BacklogDB {
   id?: number;
   name?: string;
@@ -7,4 +9,5 @@ export interface BacklogDB {
   privacy?: string;
   created_at?: Date;
   updated_at?: Date;
+  entries?: EntryDB[];
 }

@@ -1,3 +1,16 @@
+export const BacklogEntrySchema = {
+  type: 'object',
+  required: ['id', 'backlog_id', 'media_id', 'status'],
+  properties: {
+    id: { type: 'integer' },
+    backlog_id: { type: 'integer' },
+    media_id: { type: 'integer' },
+    status: { type: 'string' },
+    source_api_id: { type: 'string' },
+    source_api_title: { type: 'string' },
+  },
+};
+
 export const BacklogSchema = {
   type: 'object',
   required: ['id', 'name', 'description', 'user_id', 'category'],
@@ -10,17 +23,9 @@ export const BacklogSchema = {
       type: 'string',
       enum: ['any', 'game', 'tv show', 'movie', 'anime'],
     },
-  },
-};
-
-export const BacklogEntrySchema = {
-  type: 'object',
-  required: ['id', 'backlog_id', 'media_id', 'status'],
-  properties: {
-    id: { type: 'integer' },
-    backlog_id: { type: 'integer' },
-    media_id: { type: 'integer' },
-    status: { type: 'string' },
-    source_api_id: { type: 'string' },
+    entries: {
+      type: 'array',
+      items: BacklogEntrySchema,
+    },
   },
 };
