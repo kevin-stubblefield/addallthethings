@@ -34,4 +34,12 @@ export class GameDBService extends MediaDBService {
   async getGames(): Promise<MediaDB[]> {
     return await this.knex('media').where('type', 'game');
   }
+
+  async getGameByApiId(game_id: string): Promise<MediaDB> {
+    console.log(game_id);
+    return await this.knex('media')
+      .where('type', 'game')
+      .andWhere('source_api_id', game_id)
+      .first();
+  }
 }

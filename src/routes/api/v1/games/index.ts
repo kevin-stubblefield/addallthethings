@@ -18,6 +18,12 @@ interface GameRetrieveRequest extends RequestGenericInterface {
   };
 }
 
+interface DBGameRetrieveOneRequest extends RequestGenericInterface {
+  Params: {
+    game_id: string;
+  };
+}
+
 const games: FastifyPluginAsync = async function (fastify, opts) {
   const clientId = fastify.config.igdbClientId;
   const clientSecret = fastify.config.igdbClientSecret;
@@ -42,6 +48,28 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     },
     handler: async (request, reply) => {
       return await db.getGames();
+    },
+  });
+
+  fastify.route<DBGameRetrieveOneRequest>({
+    method: 'GET',
+    url: '/:game_id',
+    schema: {
+      tags: ['Games'],
+      description: 'Get a game from db by API id',
+      params: {
+        type: 'object',
+        properties: {
+          game_id: { type: 'string' },
+        },
+      },
+      response: {
+        200: DBGameSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { game_id } = request.params;
+      return await db.getGameByApiId(game_id);
     },
   });
 
