@@ -8,6 +8,7 @@ interface GameSearchRequest extends RequestGenericInterface {
   Querystring: {
     query: string;
     limit: number;
+    offset: number;
   };
 }
 
@@ -86,6 +87,8 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
       description: 'Search for games',
       querystring: {
         query: { type: 'string' },
+        limit: { type: 'integer' },
+        offset: { type: 'integer' },
       },
       response: {
         200: {
@@ -97,10 +100,11 @@ const games: FastifyPluginAsync = async function (fastify, opts) {
     handler: async (request, reply) => {
       const gamesApi = new IGDBApi('https://api.igdb.com/v4', clientId, token);
 
-      const { query, limit } = request.query;
+      const { query, limit, offset } = request.query;
       const searchResults = await gamesApi.searchGames(
         query.replaceAll('+', ' '),
-        limit
+        limit,
+        offset
       );
 
       await db.createGames(searchResults, sourceName);
