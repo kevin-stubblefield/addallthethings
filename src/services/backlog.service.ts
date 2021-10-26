@@ -41,6 +41,13 @@ export class BacklogService {
       .returning(['id', 'name', 'description', 'user_id', 'category'])
       .update<BacklogDB[]>(backlog);
 
+    if (backlog.is_selected) {
+      await this.knex('backlogs')
+        .where('id', '<>', id)
+        .andWhere('user_id', result[0].user_id)
+        .update({ is_selected: false });
+    }
+
     return result[0];
   }
 
@@ -54,5 +61,13 @@ export class BacklogService {
       .where('id', id);
 
     return result.length > 0;
+  }
+
+  async getSelectedBacklog(user_id: number): Promise<BacklogDB | undefined> {
+    return await this.knex<BacklogDB>('backlogs')
+      .select('*')
+      .where('user_id', user_id)
+      .andWhere('is_selected', true)
+      .first();
   }
 }

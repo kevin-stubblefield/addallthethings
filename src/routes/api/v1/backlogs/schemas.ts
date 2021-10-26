@@ -23,6 +23,8 @@ export const BacklogSchema = {
       type: 'string',
       enum: ['any', 'game', 'tv show', 'movie', 'anime'],
     },
+    privacy: { type: 'string', enum: ['public', 'friends', 'private'] },
+    is_selected: { type: 'boolean' },
     entries: {
       type: 'array',
       items: BacklogEntrySchema,

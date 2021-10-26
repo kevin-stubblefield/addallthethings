@@ -41,6 +41,7 @@ export async function up(knex: Knex): Promise<void> {
         .notNullable()
         .defaultTo('public')
         .comment('public|friends|private');
+      table.boolean('is_selected').defaultTo(false);
       table.timestamps(true, true);
       table
         .foreign('user_id')

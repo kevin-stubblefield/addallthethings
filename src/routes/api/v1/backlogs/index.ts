@@ -4,7 +4,7 @@ import { EntryDB, EntryStatus } from '../../../../models/entry.model';
 import { services } from '../../../../services';
 import { BacklogEntrySchema, BacklogSchema } from './schemas';
 
-interface BacklogRetrieveAllRequest extends RequestGenericInterface {
+interface BacklogRetrieveWithUserIdRequest extends RequestGenericInterface {
   Querystring: {
     user_id: number;
     limit?: number;
@@ -99,14 +99,14 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     },
   });
 
-  fastify.route<BacklogRetrieveAllRequest>({
+  fastify.route<BacklogRetrieveWithUserIdRequest>({
     method: 'GET',
     url: '/',
     schema: {
       tags: ['Backlogs'],
       description: 'Retrieves list of backlogs from database',
       querystring: {
-        userId: { type: 'integer' },
+        user_id: { type: 'integer' },
         limit: { type: 'integer' },
         offset: { type: 'integer' },
       },
@@ -123,6 +123,28 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
       const offset = request.query.offset || 0;
 
       return await backlogsDb.getBacklogs(user_id, limit, offset);
+    },
+  });
+
+  fastify.route<BacklogRetrieveWithUserIdRequest>({
+    method: 'GET',
+    url: '/selected',
+    schema: {
+      tags: ['Backlogs'],
+      description: 'Retrieves list of backlogs from database',
+      querystring: {
+        user_id: { type: 'integer' },
+        limit: { type: 'integer' },
+        offset: { type: 'integer' },
+      },
+      response: {
+        200: BacklogSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { user_id } = request.query;
+
+      return await backlogsDb.getSelectedBacklog(user_id);
     },
   });
 
