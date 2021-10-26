@@ -131,7 +131,7 @@ const backlogs: FastifyPluginAsync = async function (fastify, opts) {
     url: '/selected',
     schema: {
       tags: ['Backlogs'],
-      description: 'Retrieves list of backlogs from database',
+      description: 'Retrieves selected of backlogs from database',
       querystring: {
         user_id: { type: 'integer' },
         limit: { type: 'integer' },
