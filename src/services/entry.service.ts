@@ -15,7 +15,7 @@ export class EntryService {
 
   async getBacklogEntries(backlog_id: number): Promise<EntryDB[]> {
     return await this.knex<EntryDB>('backlog_entries')
-      .select('*')
+      .select('backlog_entries.*', 'media.source_api_title')
       .join('media', 'backlog_entries.media_id', 'media.id')
       .where('backlog_entries.backlog_id', backlog_id);
   }
