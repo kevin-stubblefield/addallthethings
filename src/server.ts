@@ -11,4 +11,4 @@ const server = Fastify({
 server
   .register(app)
   .then(() => server.ready())
-  .then(() => server.listen(3000, '0.0.0.0'));
+  .then(() => server.listen(process.env.PORT || 3000, '0.0.0.0'));
