@@ -28,9 +28,9 @@ jobs:
           touch .env
           echo PORT=${{ secrets.PORT }} >> .env
           echo NODE_ENV=${{ secrets.NODE_ENV }} >> .env
-          echo POSTGRES_URI={{ secrets.POSTGRES_URI }} >> .env
-          echo IGDB_CLIENT_ID={{ secrets.IGDB_CLIENT_ID }} >> .env
-          echo IGDB_CLIENT_SECRET={{ secrets.IGDB_CLIENT_ID }} >> .env
+          echo POSTGRES_URI=${{ secrets.POSTGRES_URI }} >> .env
+          echo IGDB_CLIENT_ID=${{ secrets.IGDB_CLIENT_ID }} >> .env
+          echo IGDB_CLIENT_SECRET=${{ secrets.IGDB_CLIENT_ID }} >> .env
 
       - name: Run application
         run: |
