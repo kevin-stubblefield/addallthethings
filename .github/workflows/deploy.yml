@@ -33,6 +33,6 @@ jobs:
           echo IGDB_CLIENT_SECRET={{ secrets.IGDB_CLIENT_ID }} >> .env
 
       - name: Run application
-          run: |
-            pm2 stop addallthethings
-            pm2 start dist/src/server.js --name addallthethings
+        run: |
+          pm2 stop addallthethings
+          pm2 start dist/src/server.js --name addallthethings
