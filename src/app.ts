@@ -27,6 +27,9 @@ const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   };
   // Place here your custom code!
   fastify.decorate('config', appConfig);
+
+  fastify.register(require('fastify-helmet'));
+  fastify.register(require('fastify-cors'));
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
